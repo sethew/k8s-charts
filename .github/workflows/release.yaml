@@ -33,11 +33,7 @@ jobs:
           wget https://github.com/artifacthub/hub/releases/download/v1.5.0/ah_1.5.0_linux_amd64.tar.gz
           echo 'ad0e44c6ea058ab6b85dbf582e88bad9fdbc64ded0d1dd4edbac65133e5c87da *ah_1.5.0_linux_amd64.tar.gz' | shasum -c
           tar -xzvf ah_1.5.0_linux_amd64.tar.gz ah
-          for chart in charts/*; do
-            if [ -d "$chart" ]; then
-              ./ah lint -p "$chart" || exit 1
-            fi
-          done
+          ./ah lint || exit 1
           rm -f ./ah ./ah_1.5.0_linux_amd64.tar.gz
 
       - uses: dorny/paths-filter@v3.0.2
@@ -84,8 +80,5 @@ jobs:
       - name: Helm Chart Releaser
         uses: helm/chart-releaser-action@v1.6.0
         env:
-          CR_SKIP_EXISTING: "false"
+          CR_SKIP_EXISTING: "true"
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_RELEASE_NAME_TEMPLATE: "helm-chart-{{ .Version }}"
-        with:
-          charts_dir: charts
