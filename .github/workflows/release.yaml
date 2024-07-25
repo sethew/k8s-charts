@@ -33,7 +33,11 @@ jobs:
           wget https://github.com/artifacthub/hub/releases/download/v1.5.0/ah_1.5.0_linux_amd64.tar.gz
           echo 'ad0e44c6ea058ab6b85dbf582e88bad9fdbc64ded0d1dd4edbac65133e5c87da *ah_1.5.0_linux_amd64.tar.gz' | shasum -c
           tar -xzvf ah_1.5.0_linux_amd64.tar.gz ah
-          ./ah lint -p charts/plex-media-server || exit 1
+          for chart in charts/*; do
+            if [ -d "$chart" ]; then
+              ./ah lint -p "$chart" || exit 1
+            fi
+          done
           rm -f ./ah ./ah_1.5.0_linux_amd64.tar.gz
 
       - uses: dorny/paths-filter@v3.0.2
