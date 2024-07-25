@@ -1,0 +1,8 @@
+apiVersion: v2
+name: qbittorrent-gluetun
+description: A Helm chart for qBittorrent with Gluetun VPN
+type: application
+version: 0.1.0
+appVersion: "4.6.5" # this is not updated automatically
+annotations:
+  gluetunVersion: "3.38.0" # this is not updated automatically

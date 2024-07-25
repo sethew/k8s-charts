@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qbittorrent-gluetun.fullname" . }}
+  labels:
+    app: {{ include "qbittorrent-gluetun.name" . }}
+    chart: {{ include "qbittorrent-gluetun.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "qbittorrent-gluetun.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "qbittorrent-gluetun.name" . }}
+    spec:
+      containers:
+      - name: gluetun
+        image: "{{ .Values.gluetun.image }}:{{ .Values.gluetun.tag }}"
+        env:
+        - name: VPN_SERVICE_PROVIDER
+          value: {{ .Values.gluetun.env.VPN_SERVICE_PROVIDER | quote }}
+        - name: SERVER_REGIONS
+          value: {{ .Values.gluetun.env.SERVER_REGIONS | quote }}
+        - name: VPN_PORT_FORWARDING
+          value: {{ .Values.gluetun.env.VPN_PORT_FORWARDING | quote }}
+        - name: OPENVPN_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gluetun.secret.name }}
+              key: OPENVPN_USER
+        - name: OPENVPN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gluetun.secret.name }}
+              key: OPENVPN_PASSWORD
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        volumeMounts:
+        - name: gluetun-config
+          mountPath: /gluetun
+
+      - name: qbittorrent
+        image: "{{ .Values.qbittorrent.image }}:{{ .Values.qbittorrent.tag }}"
+        env:
+        - name: PUID
+          value: {{ .Values.qbittorrent.puid | quote }}
+        - name: PGID
+          value: {{ .Values.qbittorrent.pgid | quote }}
+        - name: WEBUI_PORT
+          value: {{ .Values.qbittorrent.webuiPort | quote }}
+        - name: TORRENTING_PORT
+          value: {{ .Values.qbittorrent.torrentingPort | quote }}
+        ports:
+        - containerPort: {{ .Values.qbittorrent.webuiPort }}
+        volumeMounts:
+        - name: qbittorrent-config
+          mountPath: /config
+        - name: downloads
+          mountPath: /downloads
+
+      volumes:
+      - name: gluetun-config
+        persistentVolumeClaim:
+          claimName: {{ include "qbittorrent-gluetun.gluetunConfigPVC" . }}
+      - name: qbittorrent-config
+        persistentVolumeClaim:
+          claimName: {{ include "qbittorrent-gluetun.qbittorrentConfigPVC" . }}
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: {{ include "qbittorrent-gluetun.downloadsPVC" . }}

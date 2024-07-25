@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qbittorrent-gluetun.qbittorrentConfigPVC" . }}
+spec:
+  accessModes:
+    - {{ .Values.qbittorrent.config.persistentVolume.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.config.persistentVolume.size }}
+  storageClassName: {{ .Values.qbittorrent.config.persistentVolume.storageClass }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qbittorrent-gluetun.gluetunConfigPVC" . }}
+spec:
+  accessModes:
+    - {{ .Values.gluetun.config.persistentVolume.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.gluetun.config.persistentVolume.size }}
+  storageClassName: {{ .Values.gluetun.config.persistentVolume.storageClass }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qbittorrent-gluetun.downloadsPVC" . }}
+spec:
+  accessModes:
+    - {{ .Values.qbittorrent.downloads.persistentVolume.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.downloads.persistentVolume.size }}
+  storageClassName: {{ .Values.qbittorrent.downloads.persistentVolume.storageClass }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-qbittorrent

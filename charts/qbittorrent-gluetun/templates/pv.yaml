@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-qbittorrent-pv
+  labels:
+    app: {{ .Release.Name }}-qbittorrent
+spec:
+  capacity:
+    storage: {{ .Values.qbittorrent.downloads.persistentVolume.size }}
+  accessModes:
+    - {{ .Values.qbittorrent.downloads.persistentVolume.accessMode }}
+  nfs:
+    server: {{ .Values.qbittorrent.downloads.persistentVolume.nfs.server }}
+    path: {{ .Values.qbittorrent.downloads.persistentVolume.nfs.path }}
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Values.qbittorrent.downloads.persistentVolume.storageClass }}
