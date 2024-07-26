@@ -4,3 +4,6 @@
 [submodule "external-charts/plex"]
 	path = external-charts/plex
 	url = https://github.com/kriegalex/pms-docker.git
+[submodule "external-charts/nextcloud"]
+	path = external-charts/nextcloud
+	url = https://github.com/nextcloud/helm.git
