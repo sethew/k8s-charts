@@ -1,2 +1,14 @@
-charts/qbittorrent-gluetun/custom-values.yaml
-charts/nextcloud/custom-values.yaml
+# Developer dependency
+.bin
+
+# IDE resources
+.vscode
+.idea
+.devcontainer/
+
+# Helm resources
+charts/**/Chart.lock
+charts/**/charts
+
+# Other
+.env
