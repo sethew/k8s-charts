@@ -7,3 +7,6 @@
 [submodule "external-charts/nextcloud"]
 	path = external-charts/nextcloud
 	url = https://github.com/nextcloud/helm.git
+[submodule "external-charts/gitea"]
+	path = external-charts/gitea
+	url = https://gitea.com/gitea/helm-chart.git
