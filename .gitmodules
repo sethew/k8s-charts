@@ -13,3 +13,6 @@
 [submodule "external-charts/radarr"]
 	path = external-charts/radarr
 	url = https://gitlab.com/alexander-chernov/helm/radarr.git
+[submodule "external-charts/sonarr"]
+	path = external-charts/sonarr
+	url = https://gitlab.com/alexander-chernov/helm/sonarr.git
