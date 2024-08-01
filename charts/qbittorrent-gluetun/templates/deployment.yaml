@@ -66,10 +66,10 @@ spec:
       volumes:
       - name: gluetun-config
         persistentVolumeClaim:
-          claimName: {{ include "qbittorrent-gluetun.gluetunConfigPVC" . }}
+          claimName: {{ if .Values.persistence.gluetun.existingClaim }}{{ .Values.persistence.gluetun.existingClaim }}{{- else }}{{ template "qbittorrent-gluetun.fullname" . }}-gluetun{{- end }}
       - name: qbittorrent-config
         persistentVolumeClaim:
-          claimName: {{ include "qbittorrent-gluetun.qbittorrentConfigPVC" . }}
+          claimName: {{ if .Values.persistence.qbittorrent.existingClaim }}{{ .Values.persistence.qbittorrent.existingClaim }}{{- else }}{{ template "qbittorrent-gluetun.fullname" . }}-qbittorrent{{- end }}
       - name: downloads
         persistentVolumeClaim:
-          claimName: {{ include "qbittorrent-gluetun.downloadsPVC" . }}
+          claimName: {{ if .Values.persistence.qbittorrent.data.existingClaim }}{{ .Values.persistence.qbittorrent.data.existingClaim }}{{- else }}{{ template "qbittorrent-gluetun.fullname" . }}-data{{- end }}

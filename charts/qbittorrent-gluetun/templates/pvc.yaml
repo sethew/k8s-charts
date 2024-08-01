@@ -1,40 +1,57 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ include "qbittorrent-gluetun.qbittorrentConfigPVC" . }}
-spec:
-  accessModes:
-    - {{ .Values.qbittorrent.config.persistentVolume.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.qbittorrent.config.persistentVolume.size }}
-  storageClassName: {{ .Values.qbittorrent.config.persistentVolume.storageClass }}
 
----
+{{- if and .Values.persistence.gluetun.enabled (not .Values.persistence.gluetun.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "qbittorrent-gluetun.gluetunConfigPVC" . }}
+  name: {{ template "qbittorrent-gluetun.fullname" . }}-gluetun
 spec:
   accessModes:
-    - {{ .Values.gluetun.config.persistentVolume.accessMode }}
+    - {{ .Values.persistence.gluetun.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.gluetun.config.persistentVolume.size }}
-  storageClassName: {{ .Values.gluetun.config.persistentVolume.storageClass }}
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ include "qbittorrent-gluetun.downloadsPVC" . }}
-spec:
-  accessModes:
-    - {{ .Values.qbittorrent.downloads.persistentVolume.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.qbittorrent.downloads.persistentVolume.size }}
-  storageClassName: {{ .Values.qbittorrent.downloads.persistentVolume.storageClass }}
+      storage: {{ .Values.persistence.gluetun.size }}
+  storageClassName: {{ .Values.persistence.gluetun.storageClass | quote }}
+  {{- if .Values.persistence.gluetun.label }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-qbittorrent
+      app: {{ .Values.persistence.gluetun.label | quote }}
+  {{- end }}
+{{- end }}
+{{- if and .Values.persistence.qbittorrent.enabled (not .Values.persistence.qbittorrent.existingClaim) }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "qbittorrent-gluetun.fullname" . }}-qbittorrent
+spec:
+  accessModes:
+    - {{ .Values.persistence.qbittorrent.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.qbittorrent.size }}
+  storageClassName: {{ .Values.persistence.qbittorrent.storageClass | quote }}
+  {{- if .Values.persistence.qbittorrent.label }}
+  selector:
+    matchLabels:
+      app: {{ .Values.persistence.qbittorrent.label | quote }}
+  {{- end }}
+{{- end }}
+{{- if and .Values.persistence.qbittorrent.data.enabled (not .Values.persistence.qbittorrent.data.existingClaim) }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "qbittorrent-gluetun.fullname" . }}-data
+spec:
+  accessModes:
+    - {{ .Values.persistence.qbittorrent.data.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.qbittorrent.data.size }}
+  storageClassName: {{ .Values.persistence.qbittorrent.data.storageClass | quote }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-data
+{{- end }}

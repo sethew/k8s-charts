@@ -1,3 +1,6 @@
+nameOverride: ""
+fullnameOverride: ""
+
 # qBittorrent Configuration
 qbittorrent:
   image: linuxserver/qbittorrent
@@ -6,42 +9,48 @@ qbittorrent:
   pgid: 1000
   webuiPort: 8080
   torrentingPort: 47872
-  config:
-    persistentVolume:
-      enabled: true
-      # existingClaim: ""
-      storageClass: "nfs-client"
-      size: "1Gi"
-      accessMode: "ReadWriteOnce"
-  downloads:
-    persistentVolume:
-      enabled: true
-      # existingClaim: ""
-      storageClass: ""
-      size: "500Gi"
-      accessMode: "ReadWriteOnce"
-      nfs:
-        server: "10.0.0.7"
-        path: "/torrent"
 
 # Gluetun VPN Configuration
 gluetun:
   image: qmcgaw/gluetun
   tag: latest
   controlServerPort: 8000
-  config:
-    persistentVolume:
-      enabled: true
-      # existingClaim: ""
-      storageClass: "nfs-client"
-      size: "1Gi"
-      accessMode: "ReadWriteOnce"
+      
   env:
     VPN_SERVICE_PROVIDER: "private internet access"
     SERVER_REGIONS: "Switzerland"
     VPN_PORT_FORWARDING: true
   secret:
     name: vpn-credentials
+
+# Persistence
+persistence:
+  qbittorrent:
+    enabled: true
+    # existingClaim: ""
+    # storageClass: ""
+    label: "qbittorrent" # avoid inverting gluetun and qbittorrent
+    size: "1Gi"
+    accessMode: "ReadWriteOnce"
+
+    data:
+      enabled: true
+      # existingClaim: ""
+      # storageClass: ""
+      size: "500Gi"
+      accessMode: "ReadWriteOnce"
+      nfs:
+        server: "10.0.0.7"
+        path: "/torrent"
+
+  gluetun:
+    enabled: true
+    # existingClaim: ""
+    # storageClass: ""
+    label: "gluetun" # avoid inverting gluetun and qbittorrent
+    size: "1Gi"
+    accessMode: "ReadWriteOnce"
+
 
 # Service Configuration
 service:

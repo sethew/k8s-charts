@@ -1,16 +1,18 @@
+{{- if .Values.persistence.qbittorrent.data.nfs }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-qbittorrent-pv
+  name: {{ template "qbittorrent-gluetun.fullname" . }}-data
   labels:
-    app: {{ .Release.Name }}-qbittorrent
+    app: {{ .Release.Name }}-data
 spec:
   capacity:
-    storage: {{ .Values.qbittorrent.downloads.persistentVolume.size }}
+    storage: {{ .Values.persistence.qbittorrent.data.size }}
   accessModes:
-    - {{ .Values.qbittorrent.downloads.persistentVolume.accessMode }}
+    - {{ .Values.persistence.qbittorrent.data.accessMode }}
   nfs:
-    server: {{ .Values.qbittorrent.downloads.persistentVolume.nfs.server }}
-    path: {{ .Values.qbittorrent.downloads.persistentVolume.nfs.path }}
+    server: {{ .Values.persistence.qbittorrent.data.nfs.server }}
+    path: {{ .Values.persistence.qbittorrent.data.nfs.path }}
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: {{ .Values.qbittorrent.downloads.persistentVolume.storageClass }}
+  storageClassName: {{ .Values.persistence.qbittorrent.data.storageClass }}
+{{- end }}
