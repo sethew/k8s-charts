@@ -4,7 +4,7 @@ description: Hotio prowlarr helm chart
 
 type: application
 
-version: 1.8.0
+version: 1.8.1
 
 # renovate: image=hotio/prowlarr
 appVersion: "release-1.20.1.4603"
