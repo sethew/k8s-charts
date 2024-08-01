@@ -16,3 +16,6 @@
 [submodule "external-charts/sonarr"]
 	path = external-charts/sonarr
 	url = https://gitlab.com/alexander-chernov/helm/sonarr.git
+[submodule "external-charts/prowlarr"]
+	path = external-charts/prowlarr
+	url = https://gitlab.com/alexander-chernov/helm/prowlarr.git
