@@ -1,4 +1,0 @@
-include:
-  - project: alexander-chernov/pipelines
-    ref: main
-    file: charts/.gitlab-ci.yaml
