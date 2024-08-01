@@ -10,3 +10,6 @@
 [submodule "external-charts/gitea"]
 	path = external-charts/gitea
 	url = https://gitea.com/gitea/helm-chart.git
+[submodule "external-charts/radarr"]
+	path = external-charts/radarr
+	url = https://gitlab.com/alexander-chernov/helm/radarr.git
