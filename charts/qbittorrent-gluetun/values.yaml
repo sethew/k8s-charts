@@ -17,11 +17,28 @@ gluetun:
   controlServerPort: 8000
       
   env:
-    VPN_SERVICE_PROVIDER: "private internet access"
-    SERVER_REGIONS: "Switzerland"
-    VPN_PORT_FORWARDING: true
+    OPENVPN_USER: ""
+    OPENVPN_PASSWORD: ""
+    # Specify a supported VPN provider to use
+    VPN_SERVICE_PROVIDER: ""
+    # Comma separated list of regions
+    SERVER_REGIONS: ""
+    # Enable custom port forwarding code for supported providers
+    VPN_PORT_FORWARDING: off
+    # For private internet access, set to true to select servers with port forwarding only
+    PORT_FORWARD_ONLY: false
+    # Public IP echo service API to use
+    PUBLICIP_API: ipinfo
+    # Optional API token for the public IP echo service to increase rate limiting
+    PUBLICIP_API_TOKEN: ""
   secret:
-    name: vpn-credentials
+    # Name of existing secret to use for OpenVPN and IP API credentials.
+    existingSecret: ""
+    # Names of keys in existing secret to use for credentials
+    existingKeys:
+      openvpnUser: ""
+      openvpnPassword: ""
+      publicIpApiToken: ""
 
 # Persistence
 persistence:

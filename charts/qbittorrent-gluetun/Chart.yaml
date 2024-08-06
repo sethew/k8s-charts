@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: "4.6.5" # this is not updated automatically
 description: A Helm chart for qBittorrent with Gluetun VPN
 name: qbittorrent-gluetun
-version: 0.3.0
+version: 0.3.1
 keywords:
   - qbittorrent
   - torrrent
