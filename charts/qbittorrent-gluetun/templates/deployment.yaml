@@ -37,6 +37,15 @@ spec:
             secretKeyRef:
               name: {{ .Values.gluetun.secret.name }}
               key: OPENVPN_PASSWORD
+        {{- if .Values.gluetun.env.PUBLICIP_API }}
+        - name: PUBLICIP_API
+          value: {{ .Values.gluetun.env.PUBLICIP_API | quote }}
+        - name: PUBLICIP_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gluetun.secret.name }}
+              key: PUBLICIP_API_TOKEN
+        {{- end }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
