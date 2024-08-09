@@ -4,7 +4,7 @@ description: A Helm chart for Paperless-ngx
 home: https://docs.paperless-ngx.com/
 icon: https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/b948750/src-ui/src/assets/logo-notext.svg
 type: application
-version: 0.1.0
+version: 0.1.1
 kubeVersion: ">=1.19.0-0"
 appVersion: "2.11.2"
 keywords:

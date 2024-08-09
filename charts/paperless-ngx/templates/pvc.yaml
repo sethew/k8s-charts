@@ -1,20 +1,99 @@
-{{- range $pvc, $pvcValues := .Values.persistence }}
-{{- if and $pvcValues.enabled (not $pvcValues.existingClaim) }}
 ---
+{{- if and .Values.persistence.data.enabled (not .Values.persistence.data.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "paperless-ngx.fullname" $ }}-{{ $pvc }}
+  name: {{ include "paperless-ngx.fullname" . }}-data
   labels:
-    app: {{ include "paperless-ngx.name" $ }}
+    name: {{ include "paperless-ngx.fullname" . }}
+    {{ include "paperless-ngx.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ $pvcValues.accessMode | default "ReadWriteOnce" }}
+    - {{ .Values.persistence.data.accessMode | default "ReadWriteOnce" }}
   resources:
     requests:
-      storage: {{ $pvcValues.size | default "1Gi" }}
-  {{- if $pvcValues.storageClass }}
-  storageClassName: {{ $pvcValues.storageClass }}
+      storage: {{ .Values.persistence.data.size | default "1Gi" }}
+  {{- if .Values.persistence.data.storageClass }}
+  storageClassName: {{ .Values.persistence.data.storageClass }}
   {{- end }}
 {{- end }}
+
+---
+{{- if and .Values.persistence.media.enabled (not .Values.persistence.media.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-media
+  labels:
+    name: {{ include "paperless-ngx.fullname" . }}
+    {{ include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.media.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.media.size | default "10Gi" }}
+  {{- if .Values.persistence.media.storageClass }}
+  storageClassName: {{ .Values.persistence.media.storageClass }}
+  {{- end }}
+{{- end }}
+
+---
+{{- if and .Values.persistence.export.enabled (not .Values.persistence.shared.enabled) (not .Values.persistence.export.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-export
+  labels:
+    name: {{ include "paperless-ngx.fullname" . }}
+    {{ include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.export.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.export.size | default "10Gi" }}
+  {{- if .Values.persistence.export.storageClass }}
+  storageClassName: {{ .Values.persistence.export.storageClass }}
+  {{- end }}
+{{- end }}
+
+---
+{{- if and .Values.persistence.consume.enabled (not .Values.persistence.shared.enabled) (not .Values.persistence.consume.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-consume
+  labels:
+    name: {{ include "paperless-ngx.fullname" . }}
+    {{ include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.consume.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.consume.size | default "1Gi" }}
+  {{- if .Values.persistence.consume.storageClass }}
+  storageClassName: {{ .Values.persistence.consume.storageClass }}
+  {{- end }}
+{{- end }}
+
+---
+{{- if and .Values.persistence.shared.enabled (not .Values.persistence.shared.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}-shared
+  labels:
+    name: {{ include "paperless-ngx.fullname" . }}
+    {{ include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.consume.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.consume.size | default "10Gi" }}
+  {{- if .Values.persistence.consume.storageClass }}
+  storageClassName: {{ .Values.persistence.consume.storageClass }}
+  {{- end }}
 {{- end }}

@@ -101,10 +101,10 @@ spec:
             {{- if .Values.persistence.shared.enabled }}
             - name: shared-export-consume
               mountPath: {{ .Values.persistence.export.mountPath }}
-              subPath: {{ required "Required with shared enabled" .Values.persistence.export.subPath | quote }}
+              subPath: {{ .Values.persistence.export.subPath | default "export" | quote }}
             - name: shared-export-consume
               mountPath: {{ .Values.persistence.consume.mountPath }}
-              subPath: {{ required "Required with shared enabled" .Values.persistence.consume.subPath | quote }}
+              subPath: {{ .Values.persistence.consume.subPath | default "consume" | quote }}
             {{- else }}
             - name: export
               mountPath: {{ .Values.persistence.export.mountPath }}

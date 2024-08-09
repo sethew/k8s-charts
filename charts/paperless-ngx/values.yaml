@@ -47,38 +47,43 @@ persistence:
   # paperless internal data
   data:
     enabled: true
-    retain: true
     mountPath: /usr/src/paperless/data
-    subPath: ""
-    existingClaim: ""
+    # subPath: ""
+    # existingClaim: ""
+    # storageClass: ""
+    # size: 1Gi
   # paperless saves documents here
   media:
     enabled: true
-    retain: true
     mountPath: /usr/src/paperless/media
-    subPath: ""
-    existingClaim: ""
+    # subPath: ""
+    # existingClaim: ""
+    # storageClass: ""
+    # size: 10Gi
   # only use one volume for export and consume
   # enabling shared disables export and consume volumes
   # shared reuses "mountPath" and "subPath" from export and consume
   shared:
     enabled: false
-    retain: true
-    existingClaim: ""
+    # existingClaim: ""
+    # storageClass: ""
+    # size: 10Gi
   # paperless exports backups here
   export:
     enabled: true
-    retain: true
     mountPath: /usr/src/paperless/export
-    subPath: "" # don't leave blank with shared: true
-    existingClaim: ""
+    # subPath: "" # defaults to "export" with shared: true
+    # existingClaim: ""
+    # storageClass: ""
+    # size: 10Gi
   # paperless imports documents from here
   consume:
     enabled: true
-    retain: true
     mountPath: /usr/src/paperless/consume
-    subPath: "" # don't leave blank with shared: true
-    existingClaim: ""
+    # subPath: "" # defaults to "consume" with shared: true
+    # existingClaim: ""
+    # storageClass: ""
+    # size: 1Gi
 
 # Optionally specify additional volumes for the pod.
 extraVolumes: []
