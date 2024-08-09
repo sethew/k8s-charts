@@ -1,0 +1,126 @@
+image:
+  repository: ghcr.io/paperless-ngx/paperless-ngx
+  pullPolicy: IfNotPresent
+  tag: 2.11.2
+
+nameOverride: ""
+fullnameOverride: ""
+# optional extra annotations to add to the pods in the deployment
+podAnnotations: {}
+deploymentAnnotations: {}
+deploymentLabels: {}
+
+env:
+  TZ: UTC
+  ## you can share DATA_DIR with MEDIA_DIR by disabling the data persistence and setting this env
+  # PAPERLESS_DATA_DIR: "/usr/src/paperless/media"
+  ## see paperless-ngx documentation: https://docs.paperless-ngx.com/configuration
+  # PAPERLESS_SECRET_KEY: ""
+  # PAPERLESS_TRUSTED_PROXIES: "10.244.0.0/16"
+
+service:
+  type: ClusterIP
+  port: 8000
+  annotations: {}
+
+ingress:
+  enabled: false
+  # className: ""
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+  hosts:
+    - host: paperless.local
+      paths:
+        - path: /
+  tls: []
+  # tls:
+  #   - secretName: paperless.local
+  #     hosts:
+  #       - paperless.local
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+persistence:
+  # paperless internal data
+  data:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/data
+    subPath: ""
+    existingClaim: ""
+  # paperless saves documents here
+  media:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/media
+    subPath: ""
+    existingClaim: ""
+  # only use one volume for export and consume
+  # enabling shared disables export and consume volumes
+  # shared reuses "mountPath" and "subPath" from export and consume
+  shared:
+    enabled: false
+    retain: true
+    existingClaim: ""
+  # paperless exports backups here
+  export:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/export
+    subPath: "" # don't leave blank with shared: true
+    existingClaim: ""
+  # paperless imports documents from here
+  consume:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/consume
+    subPath: "" # don't leave blank with shared: true
+    existingClaim: ""
+
+# Optionally specify additional volumes for the pod.
+extraVolumes: []
+
+# Optionally specify additional volume mounts for the media.
+extraVolumeMounts: []
+
+postgresql:
+  enabled: true
+  auth:
+    database: paperless
+    postgresPassword: changeme
+  primary:
+    persistence:
+      enabled: false
+      # storageClass: ""
+      # size: 8Gi
+
+mariadb:
+  enabled: false
+  auth:
+    database: paperless
+    username: paperless
+    password: changeme
+    rootPassword: changeme
+  primary:
+    persistence:
+      enabled: false
+      # storageClass: ""
+      # size: 8Gi
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    username: ""
+    # Use an existing secret for redis auth. Do this if you're using Argo to manage your instance or otherwise using helm template under the hood
+    #     The secret name can vary, but the password key must be redis-password.
+    # existingSecret: paperless-redis
+    # existingSecretPasswordKey: redis-password
+  master:
+    persistence:
+      enabled: false
+  replica:
+    replicaCount: 0

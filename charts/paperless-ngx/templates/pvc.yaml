@@ -1,0 +1,20 @@
+{{- range $pvc, $pvcValues := .Values.persistence }}
+{{- if and $pvcValues.enabled (not $pvcValues.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "paperless-ngx.fullname" $ }}-{{ $pvc }}
+  labels:
+    app: {{ include "paperless-ngx.name" $ }}
+spec:
+  accessModes:
+    - {{ $pvcValues.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ $pvcValues.size | default "1Gi" }}
+  {{- if $pvcValues.storageClass }}
+  storageClassName: {{ $pvcValues.storageClass }}
+  {{- end }}
+{{- end }}
+{{- end }}
