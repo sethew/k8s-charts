@@ -72,6 +72,8 @@ spec:
         volumeMounts:
         - name: gluetun-config
           mountPath: /gluetun
+        resources:
+          {{- toYaml .Values.gluetun.resources | nindent 10 }}
 
       - name: qbittorrent
         image: "{{ .Values.qbittorrent.image }}:{{ .Values.qbittorrent.tag }}"
@@ -91,6 +93,8 @@ spec:
           mountPath: /config
         - name: downloads
           mountPath: /downloads
+        resources:
+          {{- toYaml .Values.qbittorrent.resources | nindent 10 }}
 
       volumes:
       - name: gluetun-config
