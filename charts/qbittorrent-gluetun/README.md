@@ -2,9 +2,17 @@
 
 A Helm chart for deploying a QBittorrent client that uses a VPN tunnel provided by Gluetun.
 
-### Installation
+**This helm chart has been made as a Proof of Concept.**
 
-#### Define a secret for VPN credentials
+**As such, the qbittorrent torrenting port is not updated automatically when it changes in gluetun.**
+
+**Also, it is not guaranteed that no packets will leak if gluetun stops working or crashes. The NetworkPolicy uses is fairly basic.**
+
+> Prefer using the [qbittorrent](../qbittorrent/README.md) chart that uses the `hotio/qbittorrent` docker image. It has built-in wireguard support.
+
+## Installation
+
+### Define a secret for VPN credentials
 
 ```
 kubectl create secret generic vpn-credentials \
@@ -13,7 +21,7 @@ kubectl create secret generic vpn-credentials \
   --namespace=default
 ```
 
-#### Helm
+### Helm
 
 1. Add the Helm chart repo
 
@@ -33,7 +41,7 @@ helm show values k8s-charts/qbittorrent-gluetun > values.yaml
 helm upgrade --install qbit k8s-charts/qbittorrent-gluetun --values values.yaml
 ```
 
-### QBittorrent login
+## QBittorrent login
 
 The login is `admin`. The password is visible in the logs of the qbittorent app the first time you start it:
 
@@ -43,7 +51,7 @@ kubectl logs POD_NAME qbittorrent
 
 Replace POD_NAME by the name of your pod (`kubectl get pods`). The two arguments are required because this pod runs two apps.
 
-### Gluetun Port Forwarding
+## Gluetun Port Forwarding
 
 You can get the port obtained from PIA by:
 

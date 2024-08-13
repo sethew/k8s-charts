@@ -2,6 +2,8 @@
 
 A Helm chart for deploying a QBittorrent client that uses a wireguard VPN tunnel.
 
+**By default, this chart uses the 4.3.9 version of qBittorrent, known to be stable.**
+
 ## Prerequisites
 Before deploying this chart, ensure your Kubernetes cluster meets the following requirements:
 
