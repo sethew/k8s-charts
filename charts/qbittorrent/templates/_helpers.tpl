@@ -67,6 +67,11 @@ Create environment variables used to configure the qbittorrent container as well
   value: {{ .Values.env.VPN_FIREWALL_TYPE | quote }}
 - name: VPN_HEALTHCHECK_ENABLED
   value: {{ .Values.env.VPN_HEALTHCHECK_ENABLED | quote }}
+- name: PRIVOXY_ENABLED
+  value: {{ .Values.env.PRIVOXY_ENABLED | quote }}
+- name: UNBOUND_ENABLED
+  value: {{ .Values.env.UNBOUND_ENABLED | quote }}
+{{- if eq .Values.vpn.provider "pia" }}
 - name: VPN_PIA_PREFERRED_REGION
   value: {{ .Values.env.VPN_PIA_PREFERRED_REGION | quote }}
 {{- if .Values.env.VPN_PIA_DIP_TOKEN}}
@@ -75,10 +80,6 @@ Create environment variables used to configure the qbittorrent container as well
 {{- end }}
 - name: VPN_PIA_PORT_FORWARD_PERSIST
   value: {{ .Values.env.VPN_PIA_PORT_FORWARD_PERSIST | quote }}
-- name: PRIVOXY_ENABLED
-  value: {{ .Values.env.PRIVOXY_ENABLED | quote }}
-- name: UNBOUND_ENABLED
-  value: {{ .Values.env.UNBOUND_ENABLED | quote }}
 {{- if and .Values.vpn.existingSecret .Values.vpn.existingKeys.usernameKey (not .Values.env.VPN_PIA_USER) }}
 - name: VPN_PIA_USER
   valueFrom:
@@ -99,6 +100,7 @@ Create environment variables used to configure the qbittorrent container as well
 - name: VPN_PIA_PASS
   value: {{ required "PIA password required" .Values.env.VPN_PIA_PASS | quote }}
 {{- end }}
+{{- end }} # eq .Values.vpn.provider "pia"
 {{- end }} # .Values.vpn.enabled
 {{- if .Values.extraEnv }}
 {{ toYaml .Values.extraEnv }}
