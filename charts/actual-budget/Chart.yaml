@@ -1,0 +1,15 @@
+apiVersion: v2
+name: actual-budget
+description: Helm chart for deploying Actual Budget
+home: https://actualbudget.org
+icon: https://github.com/actualbudget/actual/blob/master/packages/desktop-client/public/maskable-192x192.png
+type: application
+version: 0.1.0
+kubeVersion: ">=1.19.0.0"
+appVersion: "24.10.1"
+keywords:
+  - budget
+  - self-hosted
+  - finance
+sources:
+  - https://github.com/actualbudget/actual
