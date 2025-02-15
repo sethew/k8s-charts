@@ -1,0 +1,49 @@
+# Default values for the Actual Budget Helm chart.
+
+# Image settings for the Actual Budget container.
+image:
+  repository: actualbudget/actual-server  # The image repository for Actual Budget.
+  tag: "24.10.1"                          # The image tag to use (e.g., latest, edge).
+  pullPolicy: IfNotPresent                # Image pull policy (Always, IfNotPresent, Never).
+
+# Deployment settings.
+replicaCount: 1                    # Number of pod replicas for Actual Budget.
+
+# Kubernetes Service settings.
+service:
+  type: ClusterIP                  # Service type (ClusterIP, NodePort, LoadBalancer).
+  port: 5006                       # Port on which the service will be exposed.
+
+# Ingress configuration for exposing the service externally.
+ingress:
+  enabled: false                   # Enable or disable Ingress resource.
+  url: "actual.domain.com"         # Hostname for the Ingress.
+  ingressClassName: ""             # Specify the ingressClassName (optional).
+  annotations: {}                  # Additional annotations for the Ingress resource.
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+
+# Persistent storage settings for data.
+persistence:
+  enabled: true                  # Enable or disable persistent storage.
+  size: 5Gi                      # Size of the PersistentVolumeClaim.
+  storageClass: ""               # Storage class to use (empty string uses default).
+  existingClaim: ""              # Specify an existing PVC claim name, if available.
+
+# Resource requests and limits for the Actual Budget container.
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # requests:
+  #   memory: "256Mi"                # Minimum amount of memory requested.
+  #   cpu: "100m"                    # Minimum amount of CPU requested.
+  # limits:
+  #   memory: "512Mi"                # Maximum amount of memory allowed.
+  #   cpu: "500m"                    # Maximum amount of CPU allowed.
+
+# Security context for the Actual Budget pod.
+securityContext: {}
+  # runAsUser: 1000                  # User ID to run the container.
+  # runAsGroup: 1000                 # Group ID to run the container.
+  # fsGroup: 2000                    # File system group for mounted volumes.
