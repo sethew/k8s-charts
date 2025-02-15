@@ -1,8 +1,0 @@
-# charts/vendored-charts/sonarr/Chart.yaml
-apiVersion: v2
-name: radarr
-version: 1.12.0
-dependencies:
-  - name: radarr
-    version: 1.12.0
-    repository: https://charts.alekc.dev
