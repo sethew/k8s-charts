@@ -119,7 +119,7 @@ jobs:
           echo "| Chart | Version | Description |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|---------|-------------|" >> $GITHUB_STEP_SUMMARY
           
-          for chart in charts/*/; do
+          for chart in charts/*/*/; do
             if [ -f "${chart}Chart.yaml" ]; then
               NAME=$(yq eval '.name' "${chart}Chart.yaml")
               VERSION=$(yq eval '.version' "${chart}Chart.yaml")
