@@ -14,14 +14,20 @@
 *.swp
 *.bak
 *.tmp
-*.orig
 *~
 # Various IDEs
 .project
 .idea/
 *.tmproj
 .vscode/
-.gitlab-ci.yml
-.pre-commit-config.yaml
-README.md.gotmpl
-.prettierignore
+node_modules/
+.npmrc
+package.json
+package-lock.json
+.gitea/
+Makefile
+.markdownlintignore
+.markdownlint.yaml
+.drone.yml
+CONTRIBUTING.md
+unittests/
