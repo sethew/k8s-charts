@@ -1,23 +1,26 @@
-name: Release Helm Charts
+name: Validate Helm Charts
 
 on:
   push:
     branches:
       - main
+      - feat/refactor
     paths:
       - 'charts/**'
+  pull_request:
+    paths:
+      - 'charts/**'
+
 permissions:
   contents: read
 
 jobs:
-
   changes:
     permissions:
-      contents: read  # for dorny/paths-filter to fetch a list of changed files
-      pull-requests: read  # for dorny/paths-filter to read pull requests
+      contents: read
+      pull-requests: read
     runs-on: ubuntu-latest
-    if: |
-      (github.repository == 'kriegalex/k8s-charts')
+    if: github.repository == 'kriegalex/k8s-charts'
     outputs:
       charts: ${{ steps.filter.outputs.charts }}
 
@@ -26,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'true'
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Artifact Hub lint
@@ -43,42 +47,90 @@ jobs:
           filters: |
             charts:
               - 'charts/*/Chart.yaml'
+              - 'charts/*/values.yaml'
+              - 'charts/*/templates/**'
 
-  chart:
-    name: Release Chart
+  lint-test:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write # needed to write releases
-
-    needs:
-      - changes
-    if: |
-      (github.repository == 'kriegalex/k8s-charts') &&
-      (needs.changes.outputs.charts == 'true')
-
+    needs: changes
+    if: needs.changes.outputs.charts == 'true'
     steps:
-      - name: Checkout master
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Fetch entire history. Required for chart-releaser; see https://github.com/helm/chart-releaser-action/issues/13#issuecomment-602063896
           fetch-depth: 0
           submodules: 'true'
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup
-        shell: bash
-        run: |
-          git config --global user.name "$GITHUB_ACTOR"
-          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-      - name: Install Helm
+      - name: Set up Helm
         uses: azure/setup-helm@v4
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          version: v3.13.1
 
-      - name: Helm Chart Releaser
-        uses: helm/chart-releaser-action@v1.6.0
-        env:
-          CR_SKIP_EXISTING: "true"
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Add dependency repositories
+        run: |
+          helm repo add plex https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages
+          helm repo add nextcloud https://nextcloud.github.io/helm/
+          helm repo add gitea-charts https://dl.gitea.com/charts/
+          helm repo add alekc-charts https://charts.alekc.dev
+          helm repo add immich https://immich-app.github.io/immich-charts
+          helm repo add gabe565 https://charts.gabe565.com
+          helm repo update
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run chart-testing (lint)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct lint --debug --check-version-increment --validate-maintainers=false
+
+      - name: Create kind cluster
+        if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@v1.8.0
+
+      - name: Run chart-testing (install)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --debug
+
+  chart-summary:
+    needs: [changes, lint-test]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Install yq
+        run: |
+          wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: List Charts and Versions
+        run: |
+          echo "# Helm Charts Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Available Charts" >> $GITHUB_STEP_SUMMARY
+          echo "| Chart | Version | Description |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|---------|-------------|" >> $GITHUB_STEP_SUMMARY
+          
+          for chart in charts/*/; do
+            if [ -f "${chart}Chart.yaml" ]; then
+              NAME=$(yq eval '.name' "${chart}Chart.yaml")
+              VERSION=$(yq eval '.version' "${chart}Chart.yaml")
+              DESC=$(yq eval '.description' "${chart}Chart.yaml")
+              echo "| $NAME | $VERSION | $DESC |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
+          echo -e "\n## Validation Results" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.lint-test.result }}" == "success" ]; then
+            echo "✅ All charts passed validation" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some charts failed validation" >> $GITHUB_STEP_SUMMARY
+          fi
