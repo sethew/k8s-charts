@@ -1,21 +1,3 @@
 [submodule "external-charts/immich"]
 	path = external-charts/immich
 	url = https://github.com/kriegalex/immich-charts.git
-[submodule "external-charts/plex"]
-	path = external-charts/plex
-	url = https://github.com/kriegalex/pms-docker.git
-[submodule "external-charts/nextcloud"]
-	path = external-charts/nextcloud
-	url = https://github.com/nextcloud/helm.git
-[submodule "external-charts/gitea"]
-	path = external-charts/gitea
-	url = https://gitea.com/gitea/helm-chart.git
-[submodule "external-charts/radarr"]
-	path = external-charts/radarr
-	url = https://gitlab.com/alexander-chernov/helm/radarr.git
-[submodule "external-charts/sonarr"]
-	path = external-charts/sonarr
-	url = https://gitlab.com/alexander-chernov/helm/sonarr.git
-[submodule "external-charts/prowlarr"]
-	path = external-charts/prowlarr
-	url = https://gitlab.com/alexander-chernov/helm/prowlarr.git
