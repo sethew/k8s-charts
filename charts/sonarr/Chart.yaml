@@ -1,22 +1,8 @@
+# charts/vendored-charts/sonarr/Chart.yaml
 apiVersion: v2
 name: sonarr
-description: A Sonarr Helm chart for Kubernetes
-
-type: application
-
-version: 1.5.1
-
-# renovate: image=hotio/sonarr
-appVersion: "release-4.0.8.1874"
-
-icon: https://avatars.githubusercontent.com/u/1082903
-annotations:
-  artifacthub.io/changes: |
-    - kind: changed
-      description: bumped version to release-4.0.8.1874
-  artifacthub.io/images: |
-    - name: sonarr
-      image: hotio/sonarr
-  artifacthub.io/links: |
-    - name: Helm Repo
-      url: https://gitlab.com/alexander-chernov/helm/sonarr
+version: 1.7.0
+dependencies:
+  - name: sonarr
+    version: 1.7.0
+    repository: https://charts.alekc.dev
