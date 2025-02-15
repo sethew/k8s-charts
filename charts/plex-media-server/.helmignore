@@ -14,10 +14,20 @@
 *.swp
 *.bak
 *.tmp
-*.orig
 *~
 # Various IDEs
 .project
 .idea/
 *.tmproj
 .vscode/
+node_modules/
+.npmrc
+package.json
+package-lock.json
+.gitea/
+Makefile
+.markdownlintignore
+.markdownlint.yaml
+.drone.yml
+CONTRIBUTING.md
+unittests/
