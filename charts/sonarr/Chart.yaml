@@ -1,0 +1,8 @@
+# charts/vendored-charts/sonarr/Chart.yaml
+apiVersion: v2
+name: sonarr
+version: 1.7.0
+dependencies:
+  - name: sonarr
+    version: 1.7.0
+    repository: https://charts.alekc.dev
