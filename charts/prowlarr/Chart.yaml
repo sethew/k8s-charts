@@ -1,0 +1,8 @@
+# charts/vendored-charts/prowlarr/Chart.yaml
+apiVersion: v2
+name: prowlarr
+version: 1.12.0
+dependencies:
+  - name: prowlarr
+    version: 1.12.0
+    repository: https://charts.alekc.dev
