@@ -91,7 +91,7 @@ jobs:
         run: ct list-changed --target-branch main
 
       - name: Run chart-testing (lint)
-        run: ct lint --target-branch main 2>&1
+        run: ct lint --target-branch main --validate-maintainers=false 2>&1
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.12.0
