@@ -89,7 +89,11 @@ jobs:
 
       - name: Run chart-testing (list-changed)
         id: list-changed
-        run: changed=$(ct list-changed --target-branch main)
+        run: |
+          changed=$(ct list-changed --target-branch main)
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
