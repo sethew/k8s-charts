@@ -1,0 +1,3 @@
+# This is a placeholder values file for the prowlarr chart.
+# Actual values should be defined in the custom chart that uses this as a dependency.
+{}
