@@ -1,0 +1,8 @@
+# charts/vendored-charts/gitea/Chart.yaml
+apiVersion: v2
+name: gitea
+version: 10.6.0
+dependencies:
+  - name: gitea
+    version: 10.6.0
+    repository: https://dl.gitea.com/charts/
