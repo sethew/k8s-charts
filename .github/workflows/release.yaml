@@ -7,6 +7,8 @@ on:
     paths:
       - 'charts/**'
   pull_request:
+    branches:
+      - main
     paths:
       - 'charts/**'
 
@@ -68,7 +70,7 @@ jobs:
   lint-test:
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.charts == 'true'
+    if: ${{ needs.list-changed.outputs.changed == 'true' && github.event_name == 'pull_request' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,9 +79,14 @@ jobs:
           submodules: 'true'
 
       - name: Set up Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v4.2.0
         with:
-          version: v3.13.1
+          version: v3.17.0
+
+      - uses: actions/setup-python@v5.3.0
+        with:
+          python-version: '3.x'
+          check-latest: true
 
       - name: Add dependency repositories
         run: |
@@ -97,7 +104,7 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.1
+        uses: helm/chart-testing-action@v2.7.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
@@ -116,7 +123,7 @@ jobs:
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          ct lint --debug --check-version-increment --validate-maintainers=false 2>&1 | tee lint_output.txt
+          ct lint --target-branch "$base_branch" 2>&1 | tee lint_output.txt
           echo "### Chart Testing Lint Results" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           cat lint_output.txt >> $GITHUB_STEP_SUMMARY
@@ -124,19 +131,19 @@ jobs:
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
-        uses: helm/kind-action@v1.8.0
+        uses: helm/kind-action@v1.12.0
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          ct install --debug 2>&1 | tee install_output.txt
+          ct install --target-branch "$base_branch" 2>&1 | tee install_output.txt
           echo "### Chart Installation Test Results" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           cat install_output.txt >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
   release:
-    needs: [changes, lint-test]
+    needs: changes
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -158,8 +165,10 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Install Helm
-        uses: azure/setup-helm@v4
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.17.0
 
       - name: Add dependency repositories
         run: |
@@ -186,7 +195,7 @@ jobs:
 
       - name: Run chart-releaser
         id: releaser
-        uses: helm/chart-releaser-action@v1.6.0
+        uses: helm/chart-releaser-action@v1.7.0
         env:
           CR_SKIP_EXISTING: "true"
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
@@ -202,12 +211,6 @@ jobs:
           echo "#### Updated Charts:" >> $GITHUB_STEP_SUMMARY
           yq e '.entries | keys | .[]' index.yaml >> $GITHUB_STEP_SUMMARY
 
-      - name: Commit and push changes
-        run: |
-          git add index.yaml
-          git commit -m "Update index.yaml" || echo "No changes to commit"
-          git push
-
       - name: Final Release Summary
         run: |
           echo "### 🎉 Release Completed Successfully" >> $GITHUB_STEP_SUMMARY
@@ -216,6 +219,6 @@ jobs:
           echo "- Release Date: $(date)" >> $GITHUB_STEP_SUMMARY
           echo "#### Installation Instructions" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "helm repo add kriegalex https://kriegalex.github.io/k8s-charts/" >> $GITHUB_STEP_SUMMARY
+          echo "helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/" >> $GITHUB_STEP_SUMMARY
           echo "helm repo update" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
