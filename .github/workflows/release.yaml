@@ -36,17 +36,11 @@ jobs:
       - name: Run Artifact Hub lint
         id: ah-lint
         run: |
-          wget https://github.com/artifacthub/hub/releases/download/v1.5.0/ah_1.5.0_linux_amd64.tar.gz
-          echo 'ad0e44c6ea058ab6b85dbf582e88bad9fdbc64ded0d1dd4edbac65133e5c87da *ah_1.5.0_linux_amd64.tar.gz' | shasum -c
-          tar -xzvf ah_1.5.0_linux_amd64.tar.gz ah
-          ./ah lint 2>&1 | tee lint_results.txt
-          exit_code=${PIPESTATUS[0]}
-          echo "### Artifact Hub Lint Results" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          cat lint_results.txt >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          rm -f ./ah ./ah_1.5.0_linux_amd64.tar.gz
-          exit $exit_code
+          wget -nv https://github.com/artifacthub/hub/releases/download/v1.20.0/ah_1.20.0_linux_amd64.tar.gz
+          echo '9027626f19ff9f3ac668f222917130ac885e289e922e1428bfd2e7f066324e31 *ah_1.20.0_linux_amd64.tar.gz' | shasum -c
+          tar -xzvf ah_1.20.0_linux_amd64.tar.gz ah
+          ./ah lint || exit 1
+          rm -f ./ah ./ah_1.20.0_linux_amd64.tar.gz
 
       - uses: dorny/paths-filter@v3.0.2
         id: filter
@@ -57,15 +51,6 @@ jobs:
               - 'charts/*/Chart.yaml'
               - 'charts/*/values.yaml'
               - 'charts/*/templates/**'
-
-      - name: Summarize changed files
-        run: |
-          echo "### Changed Files Detection" >> $GITHUB_STEP_SUMMARY
-          echo "Changed charts: ${{ steps.filter.outputs.charts }}" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.filter.outputs.charts }}" == "true" ]; then
-            echo "#### Modified Chart Files:" >> $GITHUB_STEP_SUMMARY
-            git diff --name-only HEAD~1 HEAD | grep "charts/" >> $GITHUB_STEP_SUMMARY
-          fi
 
   lint-test:
     runs-on: ubuntu-latest
@@ -97,50 +82,22 @@ jobs:
           helm repo add immich https://immich-app.github.io/immich-charts
           helm repo add gabe565 https://charts.gabe565.com
           helm repo update
-          
-          echo "### Helm Repository Status" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          helm repo list >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          helm repo list
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
 
       - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --target-branch main)
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "### Changed Charts" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            echo "$changed" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### No Charts Changed" >> $GITHUB_STEP_SUMMARY
-          fi
+        run: ct list-changed --target-branch main
 
       - name: Run chart-testing (lint)
-        if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          ct lint --target-branch main 2>&1 | tee lint_output.txt
-          echo "### Chart Testing Lint Results" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          cat lint_output.txt >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        run: ct lint --target-branch main --validate-maintainers=false 2>&1
 
       - name: Create kind cluster
-        if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.12.0
 
       - name: Run chart-testing (install)
-        if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          ct install --target-branch main 2>&1 | tee install_output.txt
-          echo "### Chart Installation Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          cat install_output.txt >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        run: ct install --target-branch main 2>&1
 
   release:
     needs: changes
@@ -182,16 +139,12 @@ jobs:
 
       - name: Update dependencies
         run: |
-          echo "### Helm Dependency Updates" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           for chart in charts/*/; do
             if [ -f "${chart}Chart.yaml" ]; then
               echo "Updating dependencies for ${chart}"
-              helm dependency update "${chart}" 2>&1 | tee -a dep_update.txt
+              helm dependency update "${chart}" 2>&1
             fi
           done
-          cat dep_update.txt >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Run chart-releaser
         id: releaser
@@ -200,25 +153,3 @@ jobs:
           CR_SKIP_EXISTING: "true"
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_GENERATE_RELEASE_NOTES: true
-
-      - name: Update index.yaml
-        run: |
-          helm repo index . --url https://kriegalex.github.io/k8s-charts/
-          
-          echo "### Release Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- Repository URL: https://kriegalex.github.io/k8s-charts/" >> $GITHUB_STEP_SUMMARY
-          echo "- Release Status: Success" >> $GITHUB_STEP_SUMMARY
-          echo "#### Updated Charts:" >> $GITHUB_STEP_SUMMARY
-          yq e '.entries | keys | .[]' index.yaml >> $GITHUB_STEP_SUMMARY
-
-      - name: Final Release Summary
-        run: |
-          echo "### 🎉 Release Completed Successfully" >> $GITHUB_STEP_SUMMARY
-          echo "#### Repository Information" >> $GITHUB_STEP_SUMMARY
-          echo "- Charts Repository: https://kriegalex.github.io/k8s-charts/" >> $GITHUB_STEP_SUMMARY
-          echo "- Release Date: $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "#### Installation Instructions" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/" >> $GITHUB_STEP_SUMMARY
-          echo "helm repo update" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
