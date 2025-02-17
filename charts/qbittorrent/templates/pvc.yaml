@@ -1,5 +1,4 @@
 {{- if and .Values.persistence.config.enabled (not .Values.persistence.config.existingClaim) }}
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -12,11 +11,8 @@ spec:
     requests:
       storage: {{ .Values.persistence.config.size }}
   storageClassName: {{ .Values.persistence.config.storageClass | default "" | quote }}
-  {{- if .Values.persistence.config.label }}
-  {{- end }}
 {{- end }}
 {{- if and .Values.persistence.data.enabled (not .Values.persistence.data.existingClaim) }}
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

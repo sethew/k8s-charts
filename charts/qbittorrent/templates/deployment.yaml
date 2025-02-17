@@ -29,7 +29,7 @@ spec:
             value: "1"
       containers:
         - name: qbittorrent
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env: # from helpers
             {{- include "qbittorrent.env" . | nindent 12 }}
@@ -51,9 +51,16 @@ spec:
         #   hostPath:
         #     path: /dev/net/tun
         - name: qbittorrent-config
+          {{- if .Values.persistence.config.enabled }}
           persistentVolumeClaim:
             claimName: {{ if .Values.persistence.config.existingClaim }}{{ .Values.persistence.config.existingClaim }}{{- else }}{{ template "qbittorrent.fullname" . }}-config{{- end }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
         - name: qbittorrent-data
+          {{- if .Values.persistence.data.enabled }}
           persistentVolumeClaim:
             claimName: {{ if .Values.persistence.data.existingClaim }}{{ .Values.persistence.data.existingClaim }}{{- else }}{{ template "qbittorrent.fullname" . }}-data{{- end }}
-        
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
