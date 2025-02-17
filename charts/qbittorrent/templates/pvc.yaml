@@ -10,9 +10,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.config.size }}
-  storageClassName: {{ .Values.persistence.config.storageClass | default "default" | quote }}
-  {{- if .Values.persistence.config.label }}
-  {{- end }}
+  storageClassName: {{ .Values.persistence.config.storageClass | default "" | quote }}
 {{- end }}
 {{- if and .Values.persistence.data.enabled (not .Values.persistence.data.existingClaim) }}
 ---
@@ -26,5 +24,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.data.size }}
-  storageClassName: {{ .Values.persistence.data.storageClass | default "default" | quote }}
+  storageClassName: {{ .Values.persistence.data.storageClass | default "" | quote }}
 {{- end }}

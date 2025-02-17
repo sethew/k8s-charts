@@ -68,14 +68,14 @@ vpn:
 # Persistence
 persistence:
   config:
-    enabled: true
+    enabled: false
     size: "1Gi"
     accessMode: "ReadWriteOnce"
     # storageClass: ""
     # existingClaim: ""
 
   data:
-    enabled: true
+    enabled: false
     size: "500Gi"
     accessMode: "ReadWriteOnce"
     # storageClass: ""
