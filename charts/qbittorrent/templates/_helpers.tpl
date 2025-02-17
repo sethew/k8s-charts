@@ -27,7 +27,31 @@ If release name contains chart name it will be used as a full name.
 Create a chart name with version.
 */}}
 {{- define "qbittorrent.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "qbittorrent.labels" -}}
+app: {{ template "qbittorrent.name" . }}
+helm.sh/chart: {{ include "qbittorrent.chart" . }}
+{{ include "qbittorrent.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.commonLabels}}
+{{ toYaml .Values.commonLabels }}
+{{- end }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "qbittorrent.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "qbittorrent.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
