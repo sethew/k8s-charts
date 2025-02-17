@@ -20,6 +20,7 @@ spec:
         app.kubernetes.io/name: {{ include "qbittorrent.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- if .Values.vpn.enabled }}
       # make sure you allowed them on your worker nodes ! check "allowed-unsafe-sysctls" kubelet documentation
       securityContext:
         sysctls:
@@ -27,6 +28,7 @@ spec:
             value: "1"
           - name: net.ipv6.conf.all.disable_ipv6
             value: "1"
+      {{- end }}
       containers:
         - name: qbittorrent
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
