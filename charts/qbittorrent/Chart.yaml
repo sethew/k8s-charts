@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: "legacy-4.3.9" # legacy stable version
+appVersion: "legacy-4.3.9"  # legacy stable version
 description: A Helm chart for qBittorrent with integrated VPN
 name: qbittorrent
 version: 1.0.0
