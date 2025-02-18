@@ -37,7 +37,7 @@ spec:
             - mountPath: /src-config
               name: wg-config
             - mountPath: /config
-              name: config
+              name: qbittorrent-config
           command: [ "/bin/sh","-c" ]
           args:
             - echo "Copying over wg0.conf";
@@ -55,14 +55,9 @@ spec:
             capabilities:
               add: ["NET_ADMIN"]
           volumeMounts:
-            {{- if .Values.vpn.enabled }}
             ##  only needed by hotio image in special cases, check hotio/qbittorrent
             # - name: dev-net-tun
             #   mountPath: /dev/net/tun
-            - name: wg-config
-              configMap:
-                name: {{ include "qbittorrent.fullname" . }}-wg
-            {{- end }}
             - name: qbittorrent-config
               mountPath: /config
             - name: qbittorrent-data
