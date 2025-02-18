@@ -29,6 +29,22 @@ spec:
           - name: net.ipv6.conf.all.disable_ipv6
             value: "1"
       {{- end }}
+      {{- if and .Values.vpn.enabled .Values.vpn.config }}
+      initContainers:
+        - name: copy-config
+          image: busybox:1.28
+          volumeMounts:
+            - mountPath: /src-config
+              name: wg-config
+            - mountPath: /config
+              name: qbittorrent-config
+          command: [ "/bin/sh","-c" ]
+          args:
+            - echo "Copying over wg0.conf";
+              set -ex;
+              mkdir -p /config/wireguard/;
+              cp /src-config/wg0.conf /config/wireguard/wg0.conf;
+      {{- end }}
       containers:
         - name: qbittorrent
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -39,6 +55,7 @@ spec:
             capabilities:
               add: ["NET_ADMIN"]
           volumeMounts:
+            ##  only needed by hotio image in special cases, check hotio/qbittorrent
             # - name: dev-net-tun
             #   mountPath: /dev/net/tun
             - name: qbittorrent-config
@@ -49,9 +66,16 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
 
       volumes:
+        {{- if .Values.vpn.enabled }}
+        {{- if .Values.vpn.config  }}
+        - name: wg-config
+          configMap:
+            name: {{ include "qbittorrent.fullname" . }}-wg
+        {{- end }}
         # - name: dev-net-tun
         #   hostPath:
         #     path: /dev/net/tun
+        {{- end }}
         - name: qbittorrent-config
           {{- if .Values.persistence.config.enabled }}
           persistentVolumeClaim:

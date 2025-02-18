@@ -65,6 +65,19 @@ vpn:
     usernameKey: ""  # same as VPN_PIA_USER env
     passwordKey: ""  # same as VPN_PIA_PASS env
 
+  # copied to /config/wireguard/wg0.conf
+  config: ""
+#  config: |
+#    ## Imported by the helm chart
+#    [Interface]
+#    PrivateKey = MY-PRIVATE-KEY
+#    Address = 10.0.0.1/24
+#    ListenPort = 51820
+#
+#    [Peer]
+#    PublicKey = PEER-PUBLIC-KEY
+#    AllowedIPs = 0.0.0.0/0
+
 # Persistence
 persistence:
   config:
