@@ -20,6 +20,10 @@ spec:
         app.kubernetes.io/name: {{ include "qbittorrent.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.vpn.enabled }}
       # make sure you allowed them on your worker nodes ! check "allowed-unsafe-sysctls" kubelet documentation
       securityContext:

@@ -128,3 +128,41 @@ resources: {}
 
 # Common Labels for all resources created by this chart.
 commonLabels: {}
+
+## Pod Affinity settings
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+  # Example for node affinity:
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/hostname
+  #         operator: In
+  #         values:
+  #         - worker-01
+
+  # Example for pod affinity:
+  # podAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #       - key: app
+  #         operator: In
+  #         values:
+  #         - storage-app
+  #     topologyKey: "kubernetes.io/hostname"
+
+  # Example for pod anti-affinity:
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     podAffinityTerm:
+  #       labelSelector:
+  #         matchExpressions:
+  #         - key: app
+  #           operator: In
+  #           values:
+  #           - qbittorrent
+  #       topologyKey: kubernetes.io/hostname
