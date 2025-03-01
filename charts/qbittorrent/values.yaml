@@ -142,7 +142,7 @@ affinity: {}
   #         operator: In
   #         values:
   #         - worker-01
-  
+
   # Example for pod affinity:
   # podAffinity:
   #   requiredDuringSchedulingIgnoredDuringExecution:
@@ -153,7 +153,7 @@ affinity: {}
   #         values:
   #         - storage-app
   #     topologyKey: "kubernetes.io/hostname"
-  
+
   # Example for pod anti-affinity:
   # podAntiAffinity:
   #   preferredDuringSchedulingIgnoredDuringExecution:
