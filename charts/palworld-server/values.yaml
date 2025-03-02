@@ -63,7 +63,7 @@ server:
   timezone: "UTC"
   multithreading: true
   community: false  # Enable to show in community servers tab, USE WITH SERVER_PASSWORD!
-  
+
   # Advanced settings
   # For a complete list of available options, see:
   # https://github.com/thijsvanloef/palworld-server-docker/blob/main/README.md#environment-variables
