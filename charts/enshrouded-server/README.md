@@ -8,9 +8,23 @@ This Helm chart deploys an [Enshrouded](https://enshrouded.net/) dedicated game 
 - Helm 3.2.0+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 
-## Important Note
+## Important Notes
 
 This Helm chart is configured to run the Enshrouded server as user `steam` with UID/GID 10000:10000, as required by the container image. The persistent volume for save data is mounted at `/home/steam/enshrouded/savegame` and must be accessible by this user.
+
+It is also recommended to set some minimal resources for your server:
+
+```
+resources:
+  # -- We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube.
+  limits:
+    memory: 12Gi
+  requests:
+    cpu: 4000m
+    memory: 4Gi
+```
 
 ## Installation
 
