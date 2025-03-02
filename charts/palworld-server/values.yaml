@@ -1,0 +1,89 @@
+# Default values for Palworld server.
+image:
+  repository: thijsvanloef/palworld-server-docker
+  tag: ""  # use Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  name: ""
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: LoadBalancer
+  port: 8211
+  portUDP: 8211
+  nodePort: ""
+  annotations: {}
+
+resources: {}
+  # -- We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube.
+  # limits:
+  #   cpu: 4000m
+  #   memory: 32Gi
+  # requests:
+  #   cpu: 2000m
+  #   memory: 8Gi
+
+persistence:
+  enabled: true
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 20Gi
+  annotations: {}
+  existingClaim: ""
+
+# Palworld Server Configuration
+server:
+  # Essential settings
+  players: 16
+  port: 8211
+  name: "Palworld Server"
+  description: "Palworld Dedicated Server powered by Kubernetes"
+  password: "changeme"  # Optional but recommended
+  adminPassword: "changemeAdmin"  # Optional
+  rconEnabled: true
+  rconPort: 25575
+  timezone: "UTC"
+  multithreading: true
+  community: false  # Enable to show in community servers tab, USE WITH SERVER_PASSWORD!
+  
+  # Advanced settings
+  # For a complete list of available options, see:
+  # https://github.com/thijsvanloef/palworld-server-docker/blob/main/README.md#environment-variables
+
+# Additional environment variables
+extraEnv: []
+  # - name: TZ
+  #   value: "UTC"
+
+# Startup Probe
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 12
+
+# Liveness Probe
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 4
