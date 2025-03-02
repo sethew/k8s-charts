@@ -1,5 +1,5 @@
 apiVersion: v2
-name: palworld
+name: palworld-server
 description: A Helm chart for Palworld dedicated server
 type: application
 version: 1.0.0
