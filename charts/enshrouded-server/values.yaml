@@ -1,0 +1,168 @@
+# Default values for enshrouded-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Name overrides
+nameOverride: ""
+fullnameOverride: ""
+
+## Enshrouded Server Configuration
+enshrouded:
+  # -- Server name displayed in the server browser
+  serverName: "My Enshrouded Server"
+  # -- Server password (leave blank for no password)
+  serverPassword: "changeme"
+  # -- Maximum number of players
+  maxPlayers: 16
+  # -- Game save interval in seconds
+  saveInterval: 300
+  # -- Server IP address to bind to (default: 0.0.0.0)
+  serverIP: "0.0.0.0"
+  # -- Game server port (UDP)
+  gamePort: 15636
+  # -- Query server port (UDP)
+  queryPort: 15637
+  # -- TZ environment variable for server time zone
+  timeZone: "UTC"
+
+## Enshrouded Extra Server Configuration
+configMap:
+  enabled: true
+  # Add additional environment variables here if needed
+  data: {}
+
+## Image configuration
+image:
+  # -- Repository for the Enshrouded Server image
+  repository: sknnr/enshrouded-dedicated-server
+  # -- Specify a tag, defaults to latest
+  tag: ""
+  # -- Image pull policy
+  pullPolicy: Always
+
+## ImagePullSecrets for private docker registry
+imagePullSecrets: []
+
+## ServiceAccount configuration
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+## Pod annotations
+podAnnotations: {}
+
+## Pod security context
+podSecurityContext:
+  fsGroup: 10000
+  runAsUser: 10000
+
+## Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+## Service configuration
+service:
+  # -- Service type
+  type: LoadBalancer
+  # -- Annotations for the service
+  annotations: {}
+  # -- Game port configuration
+  gamePort:
+    # -- Port exposed by the service
+    port: 15636
+    # -- Port targetted on the pods
+    targetPort: 15636
+    # -- Protocol used by the port
+    protocol: UDP
+  # -- Query port configuration
+  queryPort:
+    # -- Port exposed by the service
+    port: 15637
+    # -- Port targetted on the pods
+    targetPort: 15637
+    # -- Protocol used by the port
+    protocol: UDP
+  # -- LoadBalancer IP (optional, cloud specific)
+  loadBalancerIP: ""
+  # -- Specify the allowed IPs for LoadBalancer
+  loadBalancerSourceRanges: []
+  # -- Use nodePort to expose the service at a static port on each node
+  # nodePort: 30000
+
+## Resource requests and limits
+resources: {}
+  # -- We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube.
+  # limits:
+  #   memory: 12Gi
+  # requests:
+  #   cpu: 4000m
+  #   memory: 4Gi
+
+## Persistence configuration
+persistence:
+  # -- Enable persistence using Persistent Volume Claims
+  enabled: true
+  # -- If defined, storageClassName: <storageClass>
+  # If set to "-", storageClassName: "", which disables dynamic provisioning
+  # If undefined or null, no storageClassName spec is set, choosing the default provisioner
+  storageClassName: ""
+  # -- Access mode for the volume
+  accessModes:
+    - ReadWriteOnce
+  # -- Size of persistent volume claim
+  size: 10Gi
+  # -- Annotations for PVC
+  annotations: {}
+  # -- Existing PVC to use (required if persistence.enabled is true)
+  existingClaim: ""
+
+## Node selector
+nodeSelector: {}
+
+## Tolerations
+tolerations: []
+
+## Affinity
+affinity: {}
+
+## Update strategy
+updateStrategy:
+  # -- Update strategy
+  type: RollingUpdate
+  # -- Rolling update configuration parameters
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 0
+
+## Pod Disruption Budget
+podDisruptionBudget:
+  # -- Enable PodDisruptionBudget
+  enabled: false
+  # -- Minimum available pods
+  minAvailable: 1
+  # -- Maximum unavailable pods
+  # maxUnavailable: 1
+
+# Startup Probe
+startupProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 12
+
+# Liveness Probe
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 4
