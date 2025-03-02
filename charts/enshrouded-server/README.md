@@ -31,21 +31,21 @@ resources:
 ### Add the repository
 
 ```bash
-helm repo add my-repo https://your-helm-repo.example
+helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
 helm repo update
 ```
 
 ### Install the chart
 
 ```bash
-helm install my-enshrouded-server my-repo/enshrouded-server
+helm install enshrouded-server k8s-charts/enshrouded-server
 ```
 Alternatively, clone the repository and install from local files:
 
 ```bash
-git clone https://github.com/your-repo/enshrouded-server-chart.git
-cd enshrouded-server-chart
-helm install my-enshrouded-server .
+git clone https://github.com/kriegalex/k8s-charts.git
+cd charts/enshrouded-server
+helm install enshrouded-server .
 ```
 
 ## Uninstallation
@@ -53,8 +53,124 @@ helm install my-enshrouded-server .
 To uninstall/delete the my-enshrouded-server deployment:
 
 ```bash
-helm delete my-enshrouded-server
+helm delete enshrouded-server
 ```
+
+## Managing Savegame Data
+
+This section explains how to safely copy savegames between your local computer and the Kubernetes cluster.
+
+### Copying Savegames to the Kubernetes PVC
+
+To upload your existing Enshrouded savegames to the server, follow these steps:
+
+#### 1. Scale Down the Enshrouded Server
+
+First, scale down the Enshrouded server to prevent data corruption while copying files:
+
+```bash
+# Replace 'enshrouded-server' with your Helm release name
+kubectl scale deployment enshrouded-server --replicas=0
+```
+
+#### 2. Scale Down the Enshrouded Server
+
+Create a file named enshrouded-server-savegame.yaml with the following content:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: enshrouded-server-savegame
+  labels:
+    app: enshrouded-server-savegame
+spec:
+  securityContext:
+    runAsUser: 10000
+    fsGroup: 10000
+  containers:
+  - name: copy-container
+    image: ubuntu:24.04
+    command: ['sleep', 'infinity']
+    volumeMounts:
+    - name: savegame-data
+      mountPath: /home/steam/enshrouded/savegame
+  volumes:
+  - name: savegame-data
+    persistentVolumeClaim:
+      # Replace with your PVC name
+      claimName: enshrouded-server
+```
+
+Apply this manifest to create the pod:
+
+```bash
+kubectl apply -f enshrouded-server-savegame.yaml
+```
+
+#### 3. Copy Files from Local to PVC
+
+Wait for the pod to be ready:
+```bash
+kubectl wait --for=condition=Ready pod/enshrouded-server-savegame
+```
+Copy your local savegame files to the PVC:
+```bash
+# For Windows (PowerShell)
+# Replace C:\path\to\local\savegame with your local savegame directory
+kubectl cp 'C:\path\to\local\savegame\' enshrouded-server-savegame:/home/steam/enshrouded/savegame/
+
+# For macOS/Linux
+# Replace /path/to/local/savegame with your local savegame directory
+kubectl cp /path/to/local/savegame/ enshrouded-server-savegame:/home/steam/enshrouded/savegame/
+```
+#### 4. Verify File Permissions
+Ensure files have correct permissions:
+```bash
+kubectl exec enshrouded-server-savegame -- ls -la /home/steam/enshrouded/savegame/
+```
+#### 5. Clean Up and Restart the Server
+Delete the temporary pod:
+```bash
+kubectl delete pod enshrouded-server-savegame
+```
+Scale the Enshrouded server back up:
+```bash
+kubectl scale deployment enshrouded-server --replicas=1
+```
+### Retrieving Savegames from the Server
+To download your savegames from the server to your local machine:
+
+```bash
+# Scale down the server first (optional but recommended)
+kubectl scale deployment enshrouded-server --replicas=0
+
+# Create the temporary pod as described above
+kubectl apply -f copy-pod.yaml
+kubectl wait --for=condition=Ready pod/enshrouded-server-savegame
+
+# Copy from PVC to local (Windows PowerShell)
+kubectl cp enshrouded-server-savegame:/home/steam/enshrouded/savegame/ 'C:\path\to\destination\'
+
+# Copy from PVC to local (macOS/Linux)
+kubectl cp enshrouded-server-savegame:/home/steam/enshrouded/savegame/ /path/to/destination/
+
+# Clean up
+kubectl delete pod enshrouded-server-savegame
+kubectl scale deployment enshrouded-server --replicas=1
+```
+
+### Finding Your Local Savegame Files
+Enshrouded savegame files are typically located at:
+
+- Windows: C:\Program Files (x86)\Steam\userdata\STEAM_ID\1203620\remote\
+- Linux (Steam/Proton): ~/.local/share/Steam/steamapps/compatdata/1203620/pfx/drive_c/users/steamuser/AppData/Local/Enshrouded/Saves
+
+### Notes on Savegame Management
+- Always scale down the server before copying files to prevent data corruption
+- Savegame files use the .sav extension
+- The container runs as UID/GID 10000:10000, which is why the copy pod uses the same values
+- Making regular backups of your savegames is recommended
 
 ## Parameters
 
@@ -154,7 +270,7 @@ helm delete my-enshrouded-server
 | `podDisruptionBudget.minAvailable` | Minimum available pods                     | `1`               |
 
 ## Notes on Persistence
-The Enshrouded dedicated server stores game saves at /opt/enshrouded/savegame. The chart by default sets up a volume to persist this data. If you're running on a local K3s or other single-node cluster, you might want to use local-path as your storage class.
+The Enshrouded dedicated server stores game saves at /home/steam/enshrouded/savegame. The chart by default sets up a volume to persist this data. If you're running on a local K3s or other single-node cluster, you might want to use local-path as your storage class.
 
 ## Troubleshooting
 
