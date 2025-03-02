@@ -1,0 +1,26 @@
+1. Get the application URL by running these commands:
+
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "enshrouded-server.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "Enshrouded server is available at UDP://$NODE_IP:$NODE_PORT"
+{{- else if contains "LoadBalancer" .Values.service.type }}
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "enshrouded-server.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  if [ -z "$SERVICE_IP" ]; then
+    export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "enshrouded-server.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+  fi
+  echo "Enshrouded server is available at UDP://$SERVICE_IP:{{ .Values.service.gamePort.port }}"
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch the status by running 'kubectl get --namespace {{ .Release.Namespace }} svc {{ include "enshrouded-server.fullname" . }}'
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "enshrouded-server.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME {{ .Values.service.gamePort.port }}:{{ .Values.enshrouded.gamePort }}
+  echo "Enshrouded server is available at UDP://127.0.0.1:{{ .Values.service.gamePort.port }}"
+{{- end }}
+
+Server Information:
+  Server Name: {{ .Values.enshrouded.serverName }}
+  Max Players: {{ .Values.enshrouded.maxPlayers }}
+  Game Port: {{ .Values.enshrouded.gamePort }} (UDP)
+  Query Port: {{ .Values.enshrouded.queryPort }} (UDP)

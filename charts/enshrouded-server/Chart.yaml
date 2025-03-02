@@ -1,0 +1,17 @@
+apiVersion: v2
+name: enshrouded-server
+description: A Helm chart for Enshrouded Dedicated Game Server
+type: application
+version: 1.0.0
+appVersion: "proton-v2.1.6"
+home: https://github.com/jsknnr/enshrouded-server
+maintainers:
+  - name: kriegalex
+    email: kriegalex@gmail.com
+keywords:
+  - game
+  - enshrouded
+  - server
+  - dedicated
+sources:
+  - https://github.com/jsknnr/enshrouded-server

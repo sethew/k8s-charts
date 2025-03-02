@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "enshrouded-server.fullname" . }}
+  labels:
+    {{- include "enshrouded-server.labels" . | nindent 4 }}
+data:
+  SERVER_NAME: "{{ .Values.enshrouded.serverName }}"
+  SERVER_IP: "{{ .Values.enshrouded.serverIP }}"
+  GAME_PORT: "{{ .Values.enshrouded.gamePort }}"
+  QUERY_PORT: "{{ .Values.enshrouded.queryPort }}"
+  MAX_PLAYERS: "{{ .Values.enshrouded.maxPlayers }}"
+  SAVE_INTERVAL: "{{ .Values.enshrouded.saveInterval }}"
+  TZ: "{{ .Values.enshrouded.timeZone }}"
+  {{- if .Values.configMap.enabled }}
+  {{- range $key, $val := .Values.configMap.data }}
+  {{ $key }}: "{{ $val }}"
+  {{- end }}
+  {{- end }}
