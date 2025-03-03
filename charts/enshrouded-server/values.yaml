@@ -155,13 +155,16 @@ podDisruptionBudget:
 
 # Startup Probe
 startupProbe:
+  enabled: true
   initialDelaySeconds: 60
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 12
 
 # Liveness Probe
+# Disabled by default, the current method is to be improved
 livenessProbe:
+  enabled: false
   initialDelaySeconds: 60
   periodSeconds: 30
   timeoutSeconds: 5
