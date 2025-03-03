@@ -1,8 +1,8 @@
 apiVersion: v2
-name: palworld
+name: palworld-server
 description: A Helm chart for Palworld dedicated server
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "v1.2.3"
 home: https://github.com/thijsvanloef/palworld-server-docker
 icon: https://raw.githubusercontent.com/thijsvanloef/palworld-server-docker/main/.github/assets/palworld-docker-logo.png
