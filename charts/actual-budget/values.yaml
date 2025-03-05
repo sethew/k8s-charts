@@ -3,7 +3,7 @@
 # Image settings for the Actual Budget container.
 image:
   repository: actualbudget/actual-server  # The image repository for Actual Budget.
-  tag: "24.10.1"                          # The image tag to use (e.g., latest, edge).
+  tag: ""                                 # The image tag to use (e.g., latest, edge).
   pullPolicy: IfNotPresent                # Image pull policy (Always, IfNotPresent, Never).
 
 # Deployment settings.

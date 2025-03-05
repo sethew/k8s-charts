@@ -5,7 +5,7 @@ fullnameOverride: ""
 image:
   repository: jellyfin/jellyfin
   # If unset use "latest"
-  tag: latest
+  tag: ""  # use Chart.appVersion by default
   pullPolicy: IfNotPresent
 
 statefulSet:
