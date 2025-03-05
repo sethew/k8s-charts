@@ -30,7 +30,7 @@ spec:
         {{- toYaml .Values.affinity | nindent 8 }}
       containers:
       - name: jellyfin
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           - containerPort: 8096
@@ -89,7 +89,7 @@ spec:
       name: config
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      {{- if .Values.pms.storageClassName }}
+      {{- if .Values.persistence.config.storageClassName }}
       storageClassName: {{ .Values.persistence.config.storageClassName }}
       {{- end }}
       resources:
@@ -101,7 +101,7 @@ spec:
       name: cache
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      {{- if .Values.pms.storageClassName }}
+      {{- if .Values.persistence.cache.storageClassName }}
       storageClassName: {{ .Values.persistence.cache.storageClassName }}
       {{- end }}
       resources:

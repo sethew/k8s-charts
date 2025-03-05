@@ -8,14 +8,14 @@ keywords:
 - Personal Media Server
 
 home: https://jellyfin.org/
-icon: https://github.com/jellyfin/jellyfin-ux/blob/master/branding/SVG/icon-solid-white.svg
+icon: https://raw.githubusercontent.com/jellyfin/jellyfin-ux/refs/heads/master/branding/NSIS/modern-install.png
 
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.0
+version: 0.2.0
 
 kubeVersion: ">=1.19.0-0"
 
@@ -23,7 +23,11 @@ kubeVersion: ">=1.19.0-0"
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "10.9.9"
+appVersion: "10.10.6"
+
+maintainers:
+  - name: kriegalex
+    email: kriegalex@gmail.com
 
 sources:
 - https://github.com/jellyfin/jellyfin

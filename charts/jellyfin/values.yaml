@@ -1,11 +1,11 @@
-
+---
 nameOverride: ""
 fullnameOverride: ""
 
 image:
   repository: jellyfin/jellyfin
   # If unset use "latest"
-  tag: latest
+  tag: ""  # use Chart.appVersion by default
   pullPolicy: IfNotPresent
 
 statefulSet:
@@ -51,13 +51,13 @@ serviceAccount:
   name: ""
 
 persistence:
-  # This is the directory containing the server configuration files. 
+  # This is the directory containing the server configuration files.
   config:
     enabled: true
     mountPath: /config
     subPath: ""
     existingClaim: ""
-    size: 20Gi # can grow to 100GB+ for big libraries
+    size: 20Gi  # can grow to 100GB+ for big libraries
     storageClassName: null
   # This is the directory containing the server cache (metadata for the libraries).
   cache:

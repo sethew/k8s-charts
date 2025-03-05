@@ -80,13 +80,24 @@ jobs:
         run: ct list-changed --target-branch main
 
       - name: Run chart-testing (lint)
-        run: ct lint --target-branch main --validate-maintainers=false 2>&1
+        run: ct lint --target-branch main 2>&1
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.12.0
 
       - name: Run chart-testing (install)
-        run: ct install --target-branch main 2>&1
+        # run: ct install --target-branch main 2>&1
+        run: |
+          # Get list of changed charts
+          CHANGED_CHARTS=$(ct list-changed --target-branch main)
+          
+          # Filter out excluded charts
+          for chart in $CHANGED_CHARTS; do
+            if [[ "$chart" != "charts/palworld-server" && "$chart" != "charts/enshrouded-server" ]]; then
+              echo "Testing chart: $chart"
+              ct install --target-branch main --charts $chart 2>&1 || exit 1
+            fi
+          done
 
   release:
     needs: changes

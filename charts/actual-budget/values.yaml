@@ -3,7 +3,7 @@
 # Image settings for the Actual Budget container.
 image:
   repository: actualbudget/actual-server  # The image repository for Actual Budget.
-  tag: "24.10.1"                          # The image tag to use (e.g., latest, edge).
+  tag: ""                                 # The image tag to use (e.g., latest, edge).
   pullPolicy: IfNotPresent                # Image pull policy (Always, IfNotPresent, Never).
 
 # Deployment settings.
@@ -26,7 +26,7 @@ ingress:
 persistence:
   enabled: true                  # Enable or disable persistent storage.
   size: 5Gi                      # Size of the PersistentVolumeClaim.
-  storageClass: ""               # Storage class to use (empty string uses default).
+  storageClass: ""               # Use "-" to indicate no storage class, empty to use the default
   existingClaim: ""              # Specify an existing PVC claim name, if available.
 
 # Resource requests and limits for the Actual Budget container.
