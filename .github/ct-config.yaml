@@ -1,0 +1,4 @@
+# .github/ct-config.yaml
+chart-dirs:
+  - charts
+helm-extra-args: --timeout 10m  # Extended timeout for resource-intensive charts
