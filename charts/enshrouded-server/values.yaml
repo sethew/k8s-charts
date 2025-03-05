@@ -166,11 +166,11 @@ livenessProbe:
   initialDelaySeconds: 60
   periodSeconds: 20
   timeoutSeconds: 5
-  failureThreshold: 6 # Allow up to 2 minutes for initial startup
+  failureThreshold: 6   # Allow up to 2 minutes for initial startup
 
 readinessProbe:
   enabled: true
   initialDelaySeconds: 60
   periodSeconds: 15
   timeoutSeconds: 5
-  failureThreshold: 20 # Allow up to 5 minutes for readiness
+  failureThreshold: 20  # Allow up to 5 minutes for readiness
