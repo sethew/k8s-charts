@@ -26,7 +26,7 @@ ingress:
 persistence:
   enabled: true                  # Enable or disable persistent storage.
   size: 5Gi                      # Size of the PersistentVolumeClaim.
-  storageClass: ""               # Storage class to use (empty string uses default).
+  storageClass: ""               # Use "-" to indicate no storage class, empty to use the default
   existingClaim: ""              # Specify an existing PVC claim name, if available.
 
 # Resource requests and limits for the Actual Budget container.
