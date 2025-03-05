@@ -53,6 +53,7 @@ spec:
               mountPath: /palworld
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          # Startup probe - wait for server to initialize
           {{- if .Values.startupProbe.enabled }}
           startupProbe:
             exec:
@@ -65,13 +66,27 @@ spec:
             timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
           {{- end }}
+          # Readiness probe - verify RCON is responsive
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - 'rcon-cli -a localhost:{{ .Values.server.rconPort }} -p "${ADMIN_PASSWORD}" "Info" 2>/dev/null | grep -q "Welcome" || exit 1'
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          # Liveness probe - check if server is running
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             exec:
               command:
-                - pgrep
-                - -f
-                - PalServer-Linux
+                - bash
+                - -c
+                - 'rcon-cli -a localhost:{{ .Values.server.rconPort }} -p "${ADMIN_PASSWORD}" "Info" 2>/dev/null | grep -q "Welcome" || exit 1'
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}

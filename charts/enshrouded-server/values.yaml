@@ -153,19 +153,24 @@ podDisruptionBudget:
   # -- Maximum unavailable pods
   # maxUnavailable: 1
 
-# Startup Probe
+# Probe configuration
 startupProbe:
   enabled: true
-  initialDelaySeconds: 60
+  initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 12
+  failureThreshold: 30  # Allow up to 5 minutes for initial startup
 
-# Liveness Probe
-# Disabled by default, the current method is to be improved
 livenessProbe:
   enabled: false
   initialDelaySeconds: 60
-  periodSeconds: 30
+  periodSeconds: 20
   timeoutSeconds: 5
-  failureThreshold: 4
+  failureThreshold: 6 # Allow up to 2 minutes for initial startup
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 20 # Allow up to 5 minutes for readiness
