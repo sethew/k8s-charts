@@ -11,5 +11,8 @@ keywords:
   - budget
   - self-hosted
   - finance
+maintainers:
+  - name: kriegalex
+    email: kriegalex@gmail.com
 sources:
   - https://github.com/actualbudget/actual

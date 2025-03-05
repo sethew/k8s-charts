@@ -25,5 +25,9 @@ kubeVersion: ">=1.19.0-0"
 # It is recommended to use it with quotes.
 appVersion: "10.10.6"
 
+maintainers:
+  - name: kriegalex
+    email: kriegalex@gmail.com
+
 sources:
 - https://github.com/jellyfin/jellyfin

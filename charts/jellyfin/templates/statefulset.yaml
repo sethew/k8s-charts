@@ -89,7 +89,7 @@ spec:
       name: config
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      {{- if .Values.pms.storageClassName }}
+      {{- if .Values.persistence.config.storageClassName }}
       storageClassName: {{ .Values.persistence.config.storageClassName }}
       {{- end }}
       resources:
@@ -101,7 +101,7 @@ spec:
       name: cache
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      {{- if .Values.pms.storageClassName }}
+      {{- if .Values.persistence.cache.storageClassName }}
       storageClassName: {{ .Values.persistence.cache.storageClassName }}
       {{- end }}
       resources:
