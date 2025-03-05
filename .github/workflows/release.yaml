@@ -73,17 +73,6 @@ jobs:
           python-version: '3.x'
           check-latest: true
 
-      - name: Add dependency repositories
-        run: |
-          helm repo add plex https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages
-          helm repo add nextcloud https://nextcloud.github.io/helm/
-          helm repo add gitea-charts https://dl.gitea.com/charts/
-          helm repo add alekc-charts https://charts.alekc.dev
-          helm repo add immich https://immich-app.github.io/immich-charts
-          helm repo add gabe565 https://charts.gabe565.com
-          helm repo update
-          helm repo list
-
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
 
@@ -126,16 +115,6 @@ jobs:
         uses: azure/setup-helm@v4.2.0
         with:
           version: v3.17.0
-
-      - name: Add dependency repositories
-        run: |
-          helm repo add plex https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages
-          helm repo add nextcloud https://nextcloud.github.io/helm/
-          helm repo add gitea-charts https://dl.gitea.com/charts/
-          helm repo add alekc-charts https://charts.alekc.dev
-          helm repo add immich https://immich-app.github.io/immich-charts
-          helm repo add gabe565 https://charts.gabe565.com
-          helm repo update
 
       - name: Update dependencies
         run: |
