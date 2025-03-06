@@ -10,5 +10,8 @@
 charts/**/Chart.lock
 charts/**/charts
 
+# Ansible
+.ansible/
+
 # Other
 .env

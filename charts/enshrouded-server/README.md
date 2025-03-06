@@ -1,12 +1,8 @@
 # Enshrouded Server Helm Chart
 
-This Helm chart deploys an [Enshrouded](https://enshrouded.net/) dedicated game server on a Kubernetes cluster.
+![Version: 1.0.4](https://img.shields.io/badge/Version-1.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: proton-v2.1.6](https://img.shields.io/badge/AppVersion-proton--v2.1.6-informational?style=flat-square)
 
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.2.0+
-- PV provisioner support in the underlying infrastructure (if persistence is enabled)
+A Helm chart for Enshrouded Dedicated Game Server
 
 ## Important Notes
 
@@ -26,34 +22,40 @@ resources:
     memory: 4Gi
 ```
 
-## Installation
-
-### Add the repository
+## Installing the Chart
 
 ```bash
+# Add the repository
 helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
-helm repo update
+
+# Install the chart
+helm install my-enshrouded-server k8s-charts/enshrouded-server
 ```
 
-### Install the chart
+## Persistence
+
+This chart creates a PersistentVolumeClaim to store your Enshrouded server data. The volume will not be deleted when you uninstall the chart. If you want to delete the PVC, you need to do it manually.
 
 ```bash
-helm install enshrouded-server k8s-charts/enshrouded-server
-```
-Alternatively, clone the repository and install from local files:
-
-```bash
-git clone https://github.com/kriegalex/k8s-charts.git
-cd charts/enshrouded-server
-helm install enshrouded-server .
+kubectl delete pvc -l app.kubernetes.io/instance=my-enshrouded-server
 ```
 
-## Uninstallation
+## Updating the Server
 
-To uninstall/delete the my-enshrouded-server deployment:
+The Enshrouded server will automatically update when new game versions are released if you use the default image tag.
+
+To manually update the server:
 
 ```bash
-helm delete enshrouded-server
+helm upgrade my-enshrouded-server k8s-charts/enshrouded-server
+```
+
+## Accessing the Server
+
+The chart creates a Service of type LoadBalancer by default. You can find the external IP with:
+
+```bash
+kubectl get svc my-enshrouded-server
 ```
 
 ## Managing Savegame Data
@@ -172,117 +174,80 @@ Enshrouded savegame files are typically located at:
 - The container runs as UID/GID 10000:10000, which is why the copy pod uses the same values
 - Making regular backups of your savegames is recommended
 
-## Parameters
+## Values
 
-### Enshrouded Server Configuration
+## Values
 
-| Name                     | Description                                  | Value                   |
-|--------------------------|----------------------------------------------|-------------------------|
-| `enshrouded.serverName`  | Server name displayed in the server browser  | `"My Enshrouded Server"` |
-| `enshrouded.serverPassword` | Server password (leave blank for no password) | `""` |
-| `enshrouded.maxPlayers`  | Maximum number of players                   | `16`                    |
-| `enshrouded.saveInterval` | Game save interval in seconds               | `300`                   |
-| `enshrouded.serverIP`    | Server IP address to bind to                 | `"0.0.0.0"`             |
-| `enshrouded.gamePort`    | Game server port (UDP)                      | `15636`                 |
-| `enshrouded.queryPort`   | Query server port (UDP)                     | `15637`                 |
-| `enshrouded.timeZone`    | TZ environment variable for server time zone | `"UTC"`                 |
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` | Affinity for pod assignment @type -- object |
+| configMap.data | object | `{}` | Additional environment variables @type -- object |
+| configMap.enabled | bool | `true` | Enable additional configuration via ConfigMap |
+| enshrouded.gamePort | int | `15636` | Game server port (UDP) |
+| enshrouded.maxPlayers | int | `16` | Maximum number of players |
+| enshrouded.queryPort | int | `15637` | Query server port (UDP) |
+| enshrouded.saveInterval | int | `300` | Game save interval in seconds |
+| enshrouded.serverIP | string | 0.0.0.0 | Server IP address to bind to |
+| enshrouded.serverName | string | `"My Enshrouded Server"` | Server name displayed in the server browser |
+| enshrouded.serverPassword | string | `"changeme"` | Server password (leave blank for no password) |
+| enshrouded.timeZone | string | `"UTC"` | TZ environment variable for server time zone |
+| fullnameOverride | string | `""` | Override the full name of the chart |
+| image.pullPolicy | string | `"Always"` | Image pull policy |
+| image.repository | string | `"sknnr/enshrouded-dedicated-server"` | Repository for the Enshrouded Server image |
+| image.tag | string | `""` | Specify a tag, defaults to Chart.appVersion |
+| imagePullSecrets | list | `[]` | ImagePullSecrets for private docker registry |
+| livenessProbe.enabled | bool | `false` | Enable livenessProbe |
+| livenessProbe.failureThreshold | int | `6` | Number of failures before giving up @description -- Allow up to 2 minutes for initial startup |
+| livenessProbe.initialDelaySeconds | int | `60` | Initial delay before probing |
+| livenessProbe.periodSeconds | int | `20` | Period between probes |
+| livenessProbe.timeoutSeconds | int | `5` | Timeout for each probe |
+| nameOverride | string | `""` | Override the name of the chart |
+| nodeSelector | object | `{}` | Node selector for pod assignment @type -- object |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | Access mode for the volume |
+| persistence.annotations | object | `{}` | Annotations for PVC |
+| persistence.enabled | bool | `true` | Enable persistence using Persistent Volume Claims |
+| persistence.existingClaim | string | `""` | Existing PVC to use (required if persistence.enabled is true) |
+| persistence.size | string | `"10Gi"` | Size of persistent volume claim |
+| persistence.storageClassName | string | `""` | StorageClass for PVC @description -- If defined, storageClassName: <storageClass> If set to "-", storageClassName: "", which disables dynamic provisioning If undefined or null, no storageClassName spec is set, choosing the default provisioner |
+| podAnnotations | object | `{}` | Annotations to add to pods |
+| podDisruptionBudget.enabled | bool | `false` | Enable PodDisruptionBudget |
+| podDisruptionBudget.minAvailable | int | `1` | Minimum available pods |
+| podSecurityContext.fsGroup | int | `10000` | Group ID to run the container |
+| podSecurityContext.runAsUser | int | `10000` | User ID to run the container |
+| readinessProbe.enabled | bool | `true` | Enable readinessProbe |
+| readinessProbe.failureThreshold | int | `20` | Number of failures before giving up @description -- Allow up to 5 minutes for readiness |
+| readinessProbe.initialDelaySeconds | int | `60` | Initial delay before probing |
+| readinessProbe.periodSeconds | int | `15` | Period between probes |
+| readinessProbe.timeoutSeconds | int | `5` | Timeout for each probe |
+| resources | object | `{}` | Resource requests and limits @description -- We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. |
+| securityContext.allowPrivilegeEscalation | bool | `false` | Prevent privilege escalation |
+| securityContext.capabilities.drop | list | `["ALL"]` | Linux capabilities to remove |
+| service.annotations | object | `{}` | Annotations for the service |
+| service.gamePort | object | `{"port":15636,"protocol":"UDP","targetPort":15636}` | Game port configuration |
+| service.gamePort.port | int | `15636` | Port exposed by the service |
+| service.gamePort.protocol | string | `"UDP"` | Protocol used by the port |
+| service.gamePort.targetPort | int | `15636` | Port targetted on the pods |
+| service.loadBalancerIP | string | `""` | LoadBalancer IP (optional, cloud specific) |
+| service.loadBalancerSourceRanges | list | `[]` | Specify the allowed IPs for LoadBalancer |
+| service.queryPort | object | `{"port":15637,"protocol":"UDP","targetPort":15637}` | Query port configuration |
+| service.queryPort.port | int | `15637` | Port exposed by the service |
+| service.queryPort.protocol | string | `"UDP"` | Protocol used by the port |
+| service.queryPort.targetPort | int | `15637` | Port targetted on the pods |
+| service.type | string | `"LoadBalancer"` | Service type @valid -- "ClusterIP" "NodePort" "LoadBalancer" "ExternalName" |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| startupProbe | object | `{"enabled":true,"failureThreshold":30,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}` | Probe configuration |
+| startupProbe.enabled | bool | `true` | Enable startupProbe |
+| startupProbe.failureThreshold | int | `30` | Number of failures before giving up @description -- Allow up to 5 minutes for initial startup |
+| startupProbe.initialDelaySeconds | int | `30` | Initial delay before probing |
+| startupProbe.periodSeconds | int | `10` | Period between probes |
+| startupProbe.timeoutSeconds | int | `5` | Timeout for each probe |
+| tolerations | list | `[]` | Tolerations for pod assignment @type -- array |
+| updateStrategy.rollingUpdate | object | `{"maxSurge":0,"maxUnavailable":1}` | Rolling update configuration parameters |
+| updateStrategy.rollingUpdate.maxSurge | int | `0` | Maximum number of new pods that can be created during the update |
+| updateStrategy.rollingUpdate.maxUnavailable | int | `1` | Maximum number of pods that can be unavailable during the update |
+| updateStrategy.type | string | `"RollingUpdate"` | Update strategy @valid -- "RollingUpdate" "Recreate" |
 
-### ConfigMap (server extra configuration)
-
-| Name                     | Description                                   | Value    |
-|--------------------------|-----------------------------------------------|----------|
-| `configMap.enabled`      | Enable additional configuration through ConfigMap | `true`  |
-| `configMap.data`         | Additional environment variables for the ConfigMap | `{}`   |
-
-### Image Configuration
-
-| Name               | Description                                  | Value                          |
-|--------------------|----------------------------------------------|--------------------------------|
-| `image.repository` | Repository for the Enshrouded Server image   | `sknnr/enshrouded-dedicated-server` |
-| `image.tag`        | Specify a tag, defaults to latest            | `"latest"`                     |
-| `image.pullPolicy` | Image pull policy                            | `Always`                       |
-
-### Common Kubernetes Configuration
-
-| Name                        | Description                                | Value          |
-|-----------------------------|--------------------------------------------|----------------|
-| `imagePullSecrets`          | ImagePullSecrets for private docker registry | `[]`         |
-| `nameOverride`              | Override the app name                      | `""`           |
-| `fullnameOverride`          | Override the full app name                 | `""`           |
-| `serviceAccount.create`     | Specifies whether a service account should be created | `true` |
-| `serviceAccount.annotations` | Annotations to add to the service account   | `{}`        |
-| `serviceAccount.name`       | The name of the service account to use      | `""`          |
-| `podAnnotations`            | Pod annotations                             | `{}`          |
-| `podSecurityContext`        | Pod security context                        | `fsGroup: 1000, runAsUser: 1000` |
-| `securityContext`           | Container security context                  | Security hardening settings |
-
-### Service Configuration
-
-| Name                              | Description                                    | Value            |
-|-----------------------------------|------------------------------------------------|------------------|
-| `service.type`                    | Service type                                   | `LoadBalancer`   |
-| `service.annotations`             | Annotations for the service                    | `{}`             |
-| `service.gamePort.port`           | Port exposed by the service                    | `15636`          |
-| `service.gamePort.targetPort`     | Port targetted on the pods                     | `15636`          |
-| `service.gamePort.protocol`       | Protocol used by the port                      | `UDP`            |
-| `service.queryPort.port`          | Port exposed by the service                    | `15637`          |
-| `service.queryPort.targetPort`    | Port targetted on the pods                     | `15637`          |
-| `service.queryPort.protocol`      | Protocol used by the port                      | `UDP`            |
-| `service.loadBalancerIP`          | LoadBalancer IP (optional, cloud specific)     | `""`             |
-| `service.loadBalancerSourceRanges` | Specify the allowed IPs for LoadBalancer      | `[]`             |
-
-### Persistence Configuration
-
-| Name                          | Description                                        | Value          |
-|-------------------------------|----------------------------------------------------|----------------|
-| `persistence.enabled`         | Enable persistence using Persistent Volume Claims  | `true`         |
-| `persistence.storageClassName`| StorageClass to use for persistence                | `""`           |
-| `persistence.accessModes`     | Access mode for the volume                         | `["ReadWriteOnce"]` |
-| `persistence.size`            | Size of persistent volume claim                    | `10Gi`         |
-| `persistence.annotations`     | Annotations for PVC                                | `{}`           |
-| `persistence.existingClaim`   | Use existing PVC                                   | `""`           |
-
-### Resource Management
-
-| Name                      | Description           | Value                  |
-|---------------------------|-----------------------|------------------------|
-| `resources.limits.cpu`    | CPU limit             | `2000m`                |
-| `resources.limits.memory` | Memory limit          | `4Gi`                  |
-| `resources.requests.cpu`  | CPU request           | `1000m`                |
-| `resources.requests.memory` | Memory request      | `2Gi`                  |
-
-### Scheduling Configuration
-
-| Name             | Description      | Value |
-|------------------|------------------|-------|
-| `nodeSelector`   | Node selector    | `{}`  |
-| `tolerations`    | Tolerations      | `[]`  |
-| `affinity`       | Affinity rules   | `{}`  |
-
-### Advanced Configuration
-
-| Name                          | Description                                     | Value             |
-|-------------------------------|-------------------------------------------------|-------------------|
-| `updateStrategy.type`         | Update strategy                                 | `RollingUpdate`   |
-| `updateStrategy.rollingUpdate.maxUnavailable` | Maximum unavailable pods during update | `1`        |
-| `updateStrategy.rollingUpdate.maxSurge`       | Maximum surge pods during update       | `0`         |
-| `podDisruptionBudget.enabled` | Enable PodDisruptionBudget                      | `false`           |
-| `podDisruptionBudget.minAvailable` | Minimum available pods                     | `1`               |
-
-## Notes on Persistence
-The Enshrouded dedicated server stores game saves at /home/steam/enshrouded/savegame. The chart by default sets up a volume to persist this data. If you're running on a local K3s or other single-node cluster, you might want to use local-path as your storage class.
-
-## Troubleshooting
-
-### Server Not Visible in Game
-
-1. Ensure UDP ports are properly exposed (both game and query ports)
-2. Check that the LoadBalancer or NodePort has the correct external IP
-3. Verify the server is running: kubectl logs -f pod/my-enshrouded-server-xxx
-4. Make sure no firewall is blocking the server ports
-
-### Game Save Issues
-
-1. Verify that persistence is enabled and working
-2. Check if the PVC is bound: kubectl get pvc
-3. If necessary, adjust the save interval with enshrouded.saveInterval
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
