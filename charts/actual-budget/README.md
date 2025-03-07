@@ -1,8 +1,8 @@
 # Actual Budget Helm Chart
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 25.3.1](https://img.shields.io/badge/AppVersion-25.3.1-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 25.3.1](https://img.shields.io/badge/AppVersion-25.3.1-informational?style=flat-square)
 
-This is a Helm chart for deploying [Actual Budget](https://actualbudget.org/), a self-hosted budgeting application. This chart provides a convenient and customizable way to deploy Actual Budget on a Kubernetes cluster.
+This is a Helm chart for deploying Actual Budget, a self-hosted budgeting application. This chart provides a convenient and customizable way to deploy Actual Budget on a Kubernetes cluster.
 
 ## Prerequisites
 - Kubernetes 1.19+
