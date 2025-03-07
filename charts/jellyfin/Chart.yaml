@@ -1,33 +1,18 @@
 apiVersion: v2
 name: jellyfin
 description: A Helm chart for Jellyfin
-
-keywords:
-- jellyfin
-- media
-- Personal Media Server
-
 home: https://jellyfin.org/
 icon: https://raw.githubusercontent.com/jellyfin/jellyfin-ux/refs/heads/master/branding/NSIS/modern-install.png
-
 type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
-# Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.2.0
-
-kubeVersion: ">=1.19.0-0"
-
-# This is the version number of the application being deployed. This version number should be
-# incremented each time you make changes to the application. Versions are not expected to
-# follow Semantic Versioning. They should reflect the version the application is using.
-# It is recommended to use it with quotes.
+version: 0.2.1
 appVersion: "10.10.6"
-
+kubeVersion: ">=1.19.0-0"
+keywords:
+  - jellyfin
+  - media
+  - Personal Media Server
 maintainers:
   - name: kriegalex
     email: kriegalex@gmail.com
-
 sources:
 - https://github.com/jellyfin/jellyfin
