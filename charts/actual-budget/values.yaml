@@ -1,49 +1,68 @@
-# Default values for the Actual Budget Helm chart.
+# -- Default values for the Actual Budget Helm chart.
 
 # Image settings for the Actual Budget container.
 image:
-  repository: actualbudget/actual-server  # The image repository for Actual Budget.
-  tag: ""                                 # The image tag to use (e.g., latest, edge).
-  pullPolicy: IfNotPresent                # Image pull policy (Always, IfNotPresent, Never).
+  # -- The image repository for Actual Budget.
+  repository: actualbudget/actual-server
+  # -- The image tag to use (e.g., latest, edge).
+  # @default -- ""
+  tag: ""
+  # -- Image pull policy (Always, IfNotPresent, Never).
+  pullPolicy: IfNotPresent
 
-# Deployment settings.
-replicaCount: 1                    # Number of pod replicas for Actual Budget.
+# -- Number of pod replicas for Actual Budget.
+replicaCount: 1
 
 # Kubernetes Service settings.
 service:
-  type: ClusterIP                  # Service type (ClusterIP, NodePort, LoadBalancer).
-  port: 5006                       # Port on which the service will be exposed.
+  # -- Service type (ClusterIP, NodePort, LoadBalancer).
+  type: ClusterIP
+  # -- Port on which the service will be exposed.
+  port: 5006
 
 # Ingress configuration for exposing the service externally.
 ingress:
-  enabled: false                   # Enable or disable Ingress resource.
-  url: "actual.domain.com"         # Hostname for the Ingress.
-  ingressClassName: ""             # Specify the ingressClassName (optional).
-  annotations: {}                  # Additional annotations for the Ingress resource.
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  # -- Enable or disable Ingress resource.
+  enabled: false
+  # -- Hostname for the Ingress.
+  url: "actual.domain.com"
+  # -- Specify the ingressClassName (optional).
+  ingressClassName: ""
+  # -- Additional annotations for the Ingress resource.
+  # @example
+  # annotations:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+  annotations: {}
 
 # Persistent storage settings for data.
 persistence:
-  enabled: true                  # Enable or disable persistent storage.
-  size: 5Gi                      # Size of the PersistentVolumeClaim.
-  storageClass: ""               # Use "-" to indicate no storage class, empty to use the default
-  existingClaim: ""              # Specify an existing PVC claim name, if available.
+  # -- Enable or disable persistent storage.
+  enabled: true
+  # -- Size of the PersistentVolumeClaim.
+  size: 5Gi
+  # -- StorageClass for the PVC.
+  # Use "-" to indicate no storage class, empty to use the default
+  storageClass: ""
+  # -- Specify an existing PVC claim name, if available.
+  existingClaim: ""
 
-# Resource requests and limits for the Actual Budget container.
+# -- Resource requests and limits for the Actual Budget container.
+# @default -- {}
+# @example
+# resources:
+#   requests:
+#     memory: "256Mi"
+#     cpu: "100m"
+#   limits:
+#     memory: "512Mi"
+#     cpu: "500m"
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # requests:
-  #   memory: "256Mi"                # Minimum amount of memory requested.
-  #   cpu: "100m"                    # Minimum amount of CPU requested.
-  # limits:
-  #   memory: "512Mi"                # Maximum amount of memory allowed.
-  #   cpu: "500m"                    # Maximum amount of CPU allowed.
 
-# Security context for the Actual Budget pod.
+# -- Security context for the Actual Budget pod.
+# @default -- {}
+# @example
+# securityContext:
+#   runAsUser: 1000
+#   runAsGroup: 1000
+#   fsGroup: 2000
 securityContext: {}
-  # runAsUser: 1000                  # User ID to run the container.
-  # runAsGroup: 1000                 # Group ID to run the container.
-  # fsGroup: 2000                    # File system group for mounted volumes.

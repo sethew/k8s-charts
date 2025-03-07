@@ -4,7 +4,7 @@ description: A Helm chart for Jellyfin
 home: https://jellyfin.org/
 icon: https://raw.githubusercontent.com/jellyfin/jellyfin-ux/refs/heads/master/branding/NSIS/modern-install.png
 type: application
-version: 0.2.2
+version: 0.2.3
 appVersion: "10.10.6"
 kubeVersion: ">=1.19.0-0"
 keywords:
