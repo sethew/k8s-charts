@@ -114,7 +114,6 @@ To control qBittorrent, access the WebUI at: http://localhost:8080
 | env.VPN_PIA_USER | string | "" | Private Internet Access (PIA) username Overrides the VPN section secret if provided |
 | env.WEBUI_PORTS | string | "8080/tcp,8080/udp" | Ports for the qBittorrent Web UI |
 | fullnameOverride | string | `""` | Override the full name of the chart |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"hotio/qbittorrent","tag":""}` | Hotio qbittorrent image configuration @section Image Configuration @describeIn https://hotio.dev/containers/qbittorrent |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"hotio/qbittorrent"` | Docker image repository for qBittorrent |
 | image.tag | string | "" (uses appVersion from chart, typically 4.3.9 which is stable with no memory leaks) | Docker image tag |

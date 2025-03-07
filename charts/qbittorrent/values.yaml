@@ -1,6 +1,4 @@
-# -- Hotio qbittorrent image configuration
-# @section Image Configuration
-# @describeIn https://hotio.dev/containers/qbittorrent
+# Image configuration
 image:
   # -- Docker image repository for qBittorrent
   repository: hotio/qbittorrent
@@ -31,20 +29,20 @@ env:
   # -- Ports for the qBittorrent Web UI
   # @default -- "8080/tcp,8080/udp"
   WEBUI_PORTS: "8080/tcp,8080/udp"
-  
+
   # -- The user ID (UID) for running the container
   # Ensures files are created with the correct user ownership
   PUID: 1000
-  
+
   # -- The group ID (GID) for running the container
   # Ensures files are created with the correct group ownership
   PGID: 1000
-  
+
   # -- The file permission mask
   # Controls default file and directory permissions
   # 002 means new files will have 664 (-rw-rw-r--) and directories 775 (drwxrwxr-x)
   UMASK: 002
-  
+
   # -- Timezone setting
   # @default -- "Etc/UTC"
   TZ: "Etc/UTC"
@@ -56,24 +54,24 @@ env:
   # Overrides the VPN section secret if provided
   # @default -- ""
   VPN_PIA_USER: ""
-  
+
   # -- Private Internet Access (PIA) password
   # Overrides the VPN section secret if provided
   # @default -- ""
   VPN_PIA_PASS: ""
-  
+
   # -- The VPN configuration file to use
   # Typically set to 'wg0' for WireGuard or 'openvpn' for OpenVPN configurations
   VPN_CONF: wg0
-  
+
   # -- The LAN network IP range that should bypass the VPN
   # Useful for allowing local network access while the VPN is active
   VPN_LAN_NETWORK: 192.168.1.0/24
-  
+
   # -- Determines if LAN traffic should bypass the VPN
   # Set to 'false' to prevent local network traffic from leaking outside the VPN tunnel
   VPN_LAN_LEAK_ENABLED: false
-  
+
   # -- Ports to be exposed to the LAN network
   # Leave empty to disable or specify ports if needed
   # @default -- ""
@@ -82,20 +80,20 @@ env:
   # -- Enables automatic port forwarding through the VPN
   # This is often necessary for torrenting to allow incoming connections
   VPN_AUTO_PORT_FORWARD: true
-  
+
   # -- Specific ports to forward if VPN_AUTO_PORT_FORWARD is enabled
   # Leave empty to let the VPN provider choose
   # @default -- ""
   VPN_AUTO_PORT_FORWARD_TO_PORTS: ""
-  
+
   # -- Keeps the local DNS settings when the VPN is connected
   # Set to 'false' to use the DNS provided by the VPN
   VPN_KEEP_LOCAL_DNS: false
-  
+
   # -- Configures the type of firewall to use with the VPN
   # 'auto' lets the container decide based on the VPN type
   VPN_FIREWALL_TYPE: auto
-  
+
   # -- Enables health checks to ensure the VPN connection is active
   # If the VPN connection drops, the container may restart or stop
   VPN_HEALTHCHECK_ENABLED: true
@@ -104,11 +102,11 @@ env:
   # Leave empty to let PIA choose the optimal server automatically
   # @default -- ""
   VPN_PIA_PREFERRED_REGION: ""
-  
+
   # -- PIA Dedicated IP token
   # Set to 'no' if not using a dedicated IP with PIA
   VPN_PIA_DIP_TOKEN: "no"
-  
+
   # -- If true, persists the port forwarding setting across sessions
   # Useful if consistent port forwarding is required
   VPN_PIA_PORT_FORWARD_PERSIST: false
@@ -237,7 +235,7 @@ affinity: {}
   #         operator: In
   #         values:
   #         - worker-01
-  
+
   # Example for pod affinity:
   # podAffinity:
   #   requiredDuringSchedulingIgnoredDuringExecution:
@@ -248,7 +246,7 @@ affinity: {}
   #         values:
   #         - storage-app
   #     topologyKey: "kubernetes.io/hostname"
-  
+
   # Example for pod anti-affinity:
   # podAntiAffinity:
   #   preferredDuringSchedulingIgnoredDuringExecution:

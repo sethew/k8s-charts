@@ -90,7 +90,7 @@ persistence:
     # -- Storage class for the configuration PVC
     # @default -- null
     storageClassName: null
-  
+
   # -- Cache directory settings
   cache:
     # -- Enable persistent storage for cache
