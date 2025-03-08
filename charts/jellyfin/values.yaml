@@ -1,88 +1,133 @@
----
+# -- Override the name of the chart
 nameOverride: ""
+# -- Override the full name of the chart
 fullnameOverride: ""
 
+# Image configuration for Jellyfin
 image:
+  # -- Docker image repository
   repository: jellyfin/jellyfin
-  # If unset use "latest"
-  tag: ""  # use Chart.appVersion by default
+  # -- Docker image tag
+  # If unset, defaults to Chart.appVersion
+  # @default -- ""
+  tag: ""
+  # -- Image pull policy
   pullPolicy: IfNotPresent
 
+# StatefulSet configuration
 statefulSet:
-  # optional extra annotations to add to the service resource
+  # -- Optional extra annotations to add to the service resource
   annotations: {}
-  # optional extra annotations to add to the pods in the statefulset
+  # -- Optional extra annotations to add to the pods in the statefulset
   podAnnotations: {}
 
+# Service configuration
 service:
+  # -- Type of Kubernetes service to create
   type: ClusterIP
+  # -- Port the service will use
   port: 8096
 
+# Ingress configuration
 ingress:
-  # Specify if an ingress resource for the pms server should be created or not
+  # -- Enable the creation of an ingress for the Jellyfin server
   enabled: false
-
-  # The ingress class that should be used
+  # -- The ingress class to use
   ingressClassName: "nginx"
-
-  # The url to use for the ingress reverse proxy to point at this pms instance
+  # -- The URL for the ingress endpoint to point to the Jellyfin instance
   url: ""
-
-  # Custom annotations to put on the ingress resource
+  # -- Custom annotations for the ingress
   annotations: {}
 
+# -- Configure resource requests and limits for the Jellyfin container
+# @default -- {}
 resources: {}
+
+# -- Node selector for the Jellyfin pod assignment
+# @default -- {}
 nodeSelector: {}
+
+# -- Tolerations for the Jellyfin pod assignment
+# @default -- []
 tolerations: []
+
+# -- Affinity settings for the Jellyfin pod assignment
+# @default -- {}
 affinity: {}
 
-# Common Labels for all resources created by this chart.
+# -- Common Labels for all resources created by this chart
+# @default -- {}
 commonLabels: {}
 
+# Service account configuration
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # If the service account token should be auto mounted
+  # -- If the service account token should be auto mounted
   automountServiceAccountToken: false
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use
   # If not set and create is true, a name is generated using the fullname template
+  # @default -- ""
   name: ""
 
+# Persistent storage configuration
 persistence:
-  # This is the directory containing the server configuration files.
+  # -- Configuration directory settings
   config:
+    # -- Enable persistent storage for configuration
     enabled: true
+    # -- Mount path for configuration data
     mountPath: /config
+    # -- Subdirectory to mount
     subPath: ""
+    # -- Use an existing PVC for configuration
     existingClaim: ""
-    size: 20Gi  # can grow to 100GB+ for big libraries
-    storageClassName: null
-  # This is the directory containing the server cache (metadata for the libraries).
-  cache:
-    enabled: true
-    mountPath: /cache
-    subPath: ""
-    existingClaim: ""
-    size: 5Gi
+    # -- Size of the PVC for configuration
+    # @default -- "20Gi (can grow to 100GB+ for big libraries)"
+    size: 20Gi
+    # -- Storage class for the configuration PVC
+    # @default -- null
     storageClassName: null
 
-# Not useful for now. Future-proofing
+  # -- Cache directory settings
+  cache:
+    # -- Enable persistent storage for cache
+    enabled: true
+    # -- Mount path for cache data
+    mountPath: /cache
+    # -- Subdirectory to mount
+    subPath: ""
+    # -- Use an existing PVC for cache
+    existingClaim: ""
+    # -- Size of the PVC for cache
+    size: 5Gi
+    # -- Storage class for the cache PVC
+    # @default -- null
+    storageClassName: null
+
+# -- Additional environment variables for the Jellyfin container
+# @default -- []
 extraEnv: []
 
-# Optionally specify additional volumes for the pod.
-extraVolumes: []
+# -- Additional volumes for the Jellyfin pod
+# @default -- []
+# @example
 # extraVolumes:
 #   - name: media
 #     persistentVolumeClaim:
 #       claimName: nfs-media
+extraVolumes: []
 
-# Optionally specify additional volume mounts for the media.
-extraVolumeMounts: []
+# -- Additional volume mounts for the Jellyfin container
+# @default -- []
+# @example
 # extraVolumeMounts:
 #   - name: media
 #     mountPath: /media
+extraVolumeMounts: []
 
-# Not useful for now. Future-proofing
+# -- Additional hosts to add to the pod's /etc/hosts
+# @default -- []
 extraHosts: []

@@ -1,10 +1,10 @@
-## Name overrides
+# Name overrides
 # -- Override the name of the chart
 nameOverride: ""
 # -- Override the full name of the chart
 fullnameOverride: ""
 
-## Enshrouded Server Configuration
+# Enshrouded Server Configuration
 enshrouded:
   # -- Server name displayed in the server browser
   serverName: "My Enshrouded Server"
@@ -24,7 +24,7 @@ enshrouded:
   # -- TZ environment variable for server time zone
   timeZone: "UTC"
 
-## Enshrouded Extra Server Configuration
+# Enshrouded Extra Server Configuration
 configMap:
   # -- Enable additional configuration via ConfigMap
   enabled: true
@@ -32,7 +32,7 @@ configMap:
   # @type -- object
   data: {}
 
-## Image configuration
+# Image configuration
 image:
   # -- Repository for the Enshrouded Server image
   repository: sknnr/enshrouded-dedicated-server
@@ -44,7 +44,7 @@ image:
 # -- ImagePullSecrets for private docker registry
 imagePullSecrets: []
 
-## ServiceAccount configuration
+# ServiceAccount configuration
 serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
@@ -57,14 +57,14 @@ serviceAccount:
 # -- Annotations to add to pods
 podAnnotations: {}
 
-## Pod security context
+# Pod security context
 podSecurityContext:
   # -- Group ID to run the container
   fsGroup: 10000
   # -- User ID to run the container
   runAsUser: 10000
 
-## Container security context
+# Container security context
 securityContext:
   # -- Prevent privilege escalation
   allowPrivilegeEscalation: false
@@ -73,7 +73,7 @@ securityContext:
     drop:
       - ALL
 
-## Service configuration
+# Service configuration
 service:
   # -- Service type
   # @valid -- "ClusterIP" "NodePort" "LoadBalancer" "ExternalName"
@@ -114,7 +114,7 @@ resources: {}
   #   cpu: 4000m
   #   memory: 4Gi
 
-## Persistence configuration
+# Persistence configuration
 persistence:
   # -- Enable persistence using Persistent Volume Claims
   enabled: true
@@ -145,7 +145,7 @@ tolerations: []
 # @type -- object
 affinity: {}
 
-## Update strategy
+# Update strategy
 updateStrategy:
   # -- Update strategy
   # @valid -- "RollingUpdate" "Recreate"
@@ -157,7 +157,7 @@ updateStrategy:
     # -- Maximum number of new pods that can be created during the update
     maxSurge: 0
 
-## Pod Disruption Budget
+# Pod Disruption Budget
 podDisruptionBudget:
   # -- Enable PodDisruptionBudget
   enabled: false
@@ -166,7 +166,7 @@ podDisruptionBudget:
   # -- Maximum unavailable pods
   # maxUnavailable: 1
 
-# -- Probe configuration
+# Kubernetes startup probe configuration
 startupProbe:
   # -- Enable startupProbe
   enabled: true
@@ -180,6 +180,7 @@ startupProbe:
   # @description -- Allow up to 5 minutes for initial startup
   failureThreshold: 30
 
+# Kubernetes liveness probe configuration
 livenessProbe:
   # -- Enable livenessProbe
   enabled: false
@@ -193,6 +194,7 @@ livenessProbe:
   # @description -- Allow up to 2 minutes for initial startup
   failureThreshold: 6
 
+# Kubernetes readiness probe configuration
 readinessProbe:
   # -- Enable readinessProbe
   enabled: true

@@ -1,6 +1,6 @@
 # Palworld Server Helm Chart
 
-![Version: 1.0.5](https://img.shields.io/badge/Version-1.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.2.3](https://img.shields.io/badge/AppVersion-v1.2.3-informational?style=flat-square)
+![Version: 1.0.6](https://img.shields.io/badge/Version-1.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.2.3](https://img.shields.io/badge/AppVersion-v1.2.3-informational?style=flat-square)
 
 This Helm chart deploys a Palworld dedicated game server on a Kubernetes cluster.
 
@@ -27,57 +27,58 @@ resources:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| extraEnv | list | `[]` |  |
-| fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"thijsvanloef/palworld-server-docker"` |  |
-| image.tag | string | `""` |  |
-| livenessProbe.enabled | bool | `true` |  |
-| livenessProbe.failureThreshold | int | `6` |  |
-| livenessProbe.initialDelaySeconds | int | `60` |  |
-| livenessProbe.periodSeconds | int | `20` |  |
-| livenessProbe.timeoutSeconds | int | `5` |  |
-| nameOverride | string | `""` |  |
-| persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| persistence.annotations | object | `{}` |  |
-| persistence.enabled | bool | `true` |  |
-| persistence.existingClaim | string | `""` |  |
-| persistence.size | string | `"20Gi"` |  |
-| persistence.storageClassName | string | `""` |  |
-| podSecurityContext.fsGroup | int | `1000` |  |
-| readinessProbe.enabled | bool | `true` |  |
-| readinessProbe.failureThreshold | int | `20` |  |
-| readinessProbe.initialDelaySeconds | int | `60` |  |
-| readinessProbe.periodSeconds | int | `15` |  |
-| readinessProbe.timeoutSeconds | int | `5` |  |
-| resources | object | `{}` |  |
-| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| securityContext.runAsGroup | int | `1000` |  |
-| securityContext.runAsNonRoot | bool | `true` |  |
-| securityContext.runAsUser | int | `1000` |  |
-| server.adminPassword | string | `"changemeAdmin"` |  |
-| server.community | bool | `false` |  |
-| server.description | string | `"Palworld Dedicated Server powered by Kubernetes"` |  |
-| server.multithreading | bool | `true` |  |
-| server.name | string | `"Palworld Server"` |  |
-| server.password | string | `"changeme"` |  |
-| server.players | int | `16` |  |
-| server.port | int | `8211` |  |
-| server.rconEnabled | bool | `true` |  |
-| server.rconPort | int | `25575` |  |
-| server.timezone | string | `"UTC"` |  |
-| service.annotations | object | `{}` |  |
-| service.nodePort | string | `""` |  |
-| service.port | int | `8211` |  |
-| service.portUDP | int | `8211` |  |
-| service.type | string | `"LoadBalancer"` |  |
-| serviceAccount.create | bool | `false` |  |
-| serviceAccount.name | string | `""` |  |
-| startupProbe.enabled | bool | `true` |  |
-| startupProbe.failureThreshold | int | `30` |  |
-| startupProbe.initialDelaySeconds | int | `30` |  |
-| startupProbe.periodSeconds | int | `10` |  |
-| startupProbe.timeoutSeconds | int | `5` |  |
+| extraEnv | list | [] | Additional environment variables @example extraEnv:   - name: TZ     value: "UTC" |
+| fullnameOverride | string | `""` | Override the full name of the chart |
+| image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| image.repository | string | `"thijsvanloef/palworld-server-docker"` | Docker image repository |
+| image.tag | string | "" (defaults to Chart.AppVersion) | Docker image tag |
+| livenessProbe.enabled | bool | `true` | Enable liveness probe |
+| livenessProbe.failureThreshold | int | 6 (allows up to 2 minutes for recovery) | Failure threshold |
+| livenessProbe.initialDelaySeconds | int | `60` | Initial delay seconds |
+| livenessProbe.periodSeconds | int | `20` | Period seconds |
+| livenessProbe.timeoutSeconds | int | `5` | Timeout seconds |
+| nameOverride | string | `""` | Override the name of the chart |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
+| persistence.annotations | object | {} | Additional PVC annotations |
+| persistence.enabled | bool | `true` | Enable persistent storage for game data |
+| persistence.existingClaim | string | "" | Use an existing PVC |
+| persistence.size | string | `"20Gi"` | Size of the PVC for game data and saves |
+| persistence.storageClassName | string | "" | Storage class for the game data PVC |
+| podSecurityContext | object | `{"fsGroup":1000}` | Security context for the pod |
+| podSecurityContext.fsGroup | int | `1000` | Group ID for filesystem access |
+| readinessProbe.enabled | bool | `true` | Enable readiness probe |
+| readinessProbe.failureThreshold | int | 20 (allows up to 5 minutes for readiness) | Failure threshold |
+| readinessProbe.initialDelaySeconds | int | `60` | Initial delay seconds |
+| readinessProbe.periodSeconds | int | `15` | Period seconds |
+| readinessProbe.timeoutSeconds | int | `5` | Timeout seconds |
+| resources | object | {} | Container resource requests and limits |
+| securityContext.capabilities | object | `{"drop":["ALL"]}` | Security capabilities to drop |
+| securityContext.runAsGroup | int | `1000` | Group ID to run the container |
+| securityContext.runAsNonRoot | bool | `true` | Run container as non-root user |
+| securityContext.runAsUser | int | `1000` | User ID to run the container |
+| server.adminPassword | string | "changemeAdmin" | Admin password for RCON access |
+| server.community | bool | `false` | Enable to show in community servers tab WARNING: USE WITH SERVER_PASSWORD! |
+| server.description | string | `"Palworld Dedicated Server powered by Kubernetes"` | Server description displayed in the server browser |
+| server.multithreading | bool | `true` | Enable multithreading for better performance |
+| server.name | string | `"Palworld Server"` | Server name displayed in the server browser |
+| server.password | string | `"changeme"` | Server password Optional but recommended for security |
+| server.players | int | `16` | Maximum number of players allowed on the server |
+| server.port | int | `8211` | Server port (must match service port) |
+| server.rconEnabled | bool | `true` | Enable RCON for server administration |
+| server.rconPort | int | `25575` | RCON port for admin commands |
+| server.timezone | string | `"UTC"` | Server timezone |
+| service.annotations | object | {} | Additional service annotations |
+| service.nodePort | string | "" | Specify a nodePort value if using NodePort service type |
+| service.port | int | `8211` | TCP port for game traffic |
+| service.portUDP | int | `8211` | UDP port for game traffic (must match TCP port) |
+| service.type | string | `"LoadBalancer"` | Service type (LoadBalancer recommended for game server access) |
+| serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| serviceAccount.name | string | "" | The name of the service account to use |
+| startupProbe.enabled | bool | `true` | Enable startup probe |
+| startupProbe.failureThreshold | int | 30 (allows up to 5 minutes for initial startup) | Failure threshold |
+| startupProbe.initialDelaySeconds | int | `30` | Initial delay seconds |
+| startupProbe.periodSeconds | int | `10` | Period seconds |
+| startupProbe.timeoutSeconds | int | `5` | Timeout seconds |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

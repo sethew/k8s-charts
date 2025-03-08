@@ -1,6 +1,6 @@
 # Enshrouded Server Helm Chart
 
-![Version: 1.0.5](https://img.shields.io/badge/Version-1.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: proton-v2.1.6](https://img.shields.io/badge/AppVersion-proton--v2.1.6-informational?style=flat-square)
+![Version: 1.0.6](https://img.shields.io/badge/Version-1.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: proton-v2.1.6](https://img.shields.io/badge/AppVersion-proton--v2.1.6-informational?style=flat-square)
 
 A Helm chart for Enshrouded Dedicated Game Server
 
@@ -237,7 +237,6 @@ Enshrouded savegame files are typically located at:
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| startupProbe | object | `{"enabled":true,"failureThreshold":30,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}` | Probe configuration |
 | startupProbe.enabled | bool | `true` | Enable startupProbe |
 | startupProbe.failureThreshold | int | `30` | Number of failures before giving up @description -- Allow up to 5 minutes for initial startup |
 | startupProbe.initialDelaySeconds | int | `30` | Initial delay before probing |

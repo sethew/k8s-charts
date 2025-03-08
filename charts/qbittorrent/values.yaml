@@ -1,137 +1,230 @@
-## Hotio qbittorrent image version
-## ref: https://hotio.dev/containers/qbittorrent
-##
+# Image configuration
 image:
+  # -- Docker image repository for qBittorrent
   repository: hotio/qbittorrent
-  tag: ""  # appVersion from chart, 4.3.9 by default, known to be stable (no memory leaks)
+  # -- Docker image tag
+  # @default -- "" (uses appVersion from chart, typically 4.3.9 which is stable with no memory leaks)
+  tag: ""
+  # -- Image pull policy
   pullPolicy: IfNotPresent
 
+# -- Override the name of the chart
 nameOverride: ""
+# -- Override the full name of the chart
 fullnameOverride: ""
 
-# Number of replicas to be deployed
+# -- Number of replicas to be deployed
 replicaCount: 1
 
-# Service Configuration
+# Service configuration for qBittorrent
 service:
-  type: ClusterIP  # can't assume that LoadBalancer is available to the final user
+  # -- Service type
+  # @default -- ClusterIP (LoadBalancer not assumed to be available to all users)
+  type: ClusterIP
+  # -- Port for the qBittorrent WebUI
   port: 8080
 
+# Environment variables for the qBittorrent container
 env:
-  WEBUI_PORTS: "8080/tcp,8080/udp"  # Ports for the qBittorrent Web UI. Set to 8080 by default for both TCP and UDP.
-  PUID: 1000  # The user ID (UID) for running the container. Ensures files are created with the correct user ownership.
-  PGID: 1000  # The group ID (GID) for running the container. Ensures files are created with the correct group ownership.
-  UMASK: 002  # The file permission mask. Controls default file and directory permissions. 002 means new files will have 664 (-rw-rw-r--) and directories 775 (drwxrwxr-x).
-  TZ: "Etc/UTC"  # Timezone. Defaults to UTC
+  # -- Ports for the qBittorrent Web UI
+  # @default -- "8080/tcp,8080/udp"
+  WEBUI_PORTS: "8080/tcp,8080/udp"
 
-  VPN_PIA_USER: ""  # Private Internet Access (PIA) username. Overrides the VPN section secret if provided.
-  VPN_PIA_PASS: ""  # Private Internet Access (PIA) password. Overrides the VPN section secret if provided.
-  VPN_CONF: wg0  # The VPN configuration file to use. Typically set to 'wg0' for WireGuard or 'openvpn' for OpenVPN configurations.
-  VPN_LAN_NETWORK: 192.168.1.0/24  # The LAN network IP range that should bypass the VPN. Useful for allowing local network access while the VPN is active.
-  VPN_LAN_LEAK_ENABLED: false  # Determines if LAN traffic should bypass the VPN. Set to 'false' to prevent local network traffic from leaking outside the VPN tunnel.
-  VPN_EXPOSE_PORTS_ON_LAN: ""  # Ports to be exposed to the LAN network. Leave empty to disable or specify ports if needed.
+  # -- The user ID (UID) for running the container
+  # Ensures files are created with the correct user ownership
+  PUID: 1000
 
-  VPN_AUTO_PORT_FORWARD: true  # Enables automatic port forwarding through the VPN. This is often necessary for torrenting to allow incoming connections.
-  VPN_AUTO_PORT_FORWARD_TO_PORTS: ""  # Specific ports to forward if VPN_AUTO_PORT_FORWARD is enabled. Leave empty to let the VPN provider choose.
-  VPN_KEEP_LOCAL_DNS: false  # Keeps the local DNS settings when the VPN is connected. Set to 'false' to use the DNS provided by the VPN.
-  VPN_FIREWALL_TYPE: auto  # Configures the type of firewall to use with the VPN. 'auto' lets the container decide based on the VPN type.
-  VPN_HEALTHCHECK_ENABLED: true  # Enables health checks to ensure the VPN connection is active. If the VPN connection drops, the container may restart or stop.
+  # -- The group ID (GID) for running the container
+  # Ensures files are created with the correct group ownership
+  PGID: 1000
 
-  VPN_PIA_PREFERRED_REGION: ""  # Preferred region for the PIA VPN. Leave empty to let PIA choose the optimal server automatically.
-  VPN_PIA_DIP_TOKEN: "no"  # PIA Dedicated IP token. Set to 'no' if not using a dedicated IP with PIA.
-  VPN_PIA_PORT_FORWARD_PERSIST: false  # If true, persists the port forwarding setting across sessions. Useful if consistent port forwarding is required.
+  # -- The file permission mask
+  # Controls default file and directory permissions
+  # 002 means new files will have 664 (-rw-rw-r--) and directories 775 (drwxrwxr-x)
+  UMASK: 002
 
-  PRIVOXY_ENABLED: false  # Enables Privoxy, a web proxy with advanced filtering capabilities. Set to 'true' to enable, 'false' to disable.
-  UNBOUND_ENABLED: false  # Enables Unbound, a validating, recursive, and caching DNS resolver. Set to 'true' to enable, 'false' to disable.
+  # -- Timezone setting
+  # @default -- "Etc/UTC"
+  TZ: "Etc/UTC"
 
+  # -- VPN Configuration Settings
+  # @section VPN Configuration
 
-##
-## Extra environment variables
-extraEnv: []
-#  - name: NEW_VPN_ENV
-#    value: NEW_VALUE
-#  - name: NEW_VPN_SECRET
-#    valueFrom:
-#      secretKeyRef:
-#        ...
+  # -- Private Internet Access (PIA) username
+  # Overrides the VPN section secret if provided
+  # @default -- ""
+  VPN_PIA_USER: ""
 
+  # -- Private Internet Access (PIA) password
+  # Overrides the VPN section secret if provided
+  # @default -- ""
+  VPN_PIA_PASS: ""
+
+  # -- The VPN configuration file to use
+  # Typically set to 'wg0' for WireGuard or 'openvpn' for OpenVPN configurations
+  VPN_CONF: wg0
+
+  # -- The LAN network IP range that should bypass the VPN
+  # Useful for allowing local network access while the VPN is active
+  VPN_LAN_NETWORK: 192.168.1.0/24
+
+  # -- Determines if LAN traffic should bypass the VPN
+  # Set to 'false' to prevent local network traffic from leaking outside the VPN tunnel
+  VPN_LAN_LEAK_ENABLED: false
+
+  # -- Ports to be exposed to the LAN network
+  # Leave empty to disable or specify ports if needed
+  # @default -- ""
+  VPN_EXPOSE_PORTS_ON_LAN: ""
+
+  # -- Enables automatic port forwarding through the VPN
+  # This is often necessary for torrenting to allow incoming connections
+  VPN_AUTO_PORT_FORWARD: true
+
+  # -- Specific ports to forward if VPN_AUTO_PORT_FORWARD is enabled
+  # Leave empty to let the VPN provider choose
+  # @default -- ""
+  VPN_AUTO_PORT_FORWARD_TO_PORTS: ""
+
+  # -- Keeps the local DNS settings when the VPN is connected
+  # Set to 'false' to use the DNS provided by the VPN
+  VPN_KEEP_LOCAL_DNS: false
+
+  # -- Configures the type of firewall to use with the VPN
+  # 'auto' lets the container decide based on the VPN type
+  VPN_FIREWALL_TYPE: auto
+
+  # -- Enables health checks to ensure the VPN connection is active
+  # If the VPN connection drops, the container may restart or stop
+  VPN_HEALTHCHECK_ENABLED: true
+
+  # -- Preferred region for the PIA VPN
+  # Leave empty to let PIA choose the optimal server automatically
+  # @default -- ""
+  VPN_PIA_PREFERRED_REGION: ""
+
+  # -- PIA Dedicated IP token
+  # Set to 'no' if not using a dedicated IP with PIA
+  VPN_PIA_DIP_TOKEN: "no"
+
+  # -- If true, persists the port forwarding setting across sessions
+  # Useful if consistent port forwarding is required
+  VPN_PIA_PORT_FORWARD_PERSIST: false
+
+# VPN connection configuration
 vpn:
-  enabled: false  # same as VPN_ENABLED env
-  provider: pia  # same as VPN_PROVIDER env
-  # Name of existing secret to use for PIA VPN.
-  existingSecret: ""
-  # Names of keys in existing secret to use for credentials
-  existingKeys:
-    usernameKey: ""  # same as VPN_PIA_USER env
-    passwordKey: ""  # same as VPN_PIA_PASS env
-
-  # copied to /config/wireguard/wg0.conf
-  config: ""
-#  config: |
-#    ## Imported by the helm chart
-#    [Interface]
-#    PrivateKey = MY-PRIVATE-KEY
-#    Address = 10.0.0.1/24
-#    ListenPort = 51820
-#
-#    [Peer]
-#    PublicKey = PEER-PUBLIC-KEY
-#    AllowedIPs = 0.0.0.0/0
-
-# Persistence
-persistence:
-  config:
-    enabled: false
-    size: "1Gi"
-    accessMode: "ReadWriteOnce"
-    # storageClass: ""
-    # existingClaim: ""
-
-  data:
-    enabled: false
-    size: "500Gi"
-    accessMode: "ReadWriteOnce"
-    # storageClass: ""
-    # existingClaim: ""
-
-ingress:
-  # Specify if an ingress resource for the pms server should be created or not
+  # -- Enable VPN support (same as VPN_ENABLED env var)
   enabled: false
+  # -- VPN provider, currently supports PIA (same as VPN_PROVIDER env)
+  provider: pia
+  # -- Name of existing secret to use for PIA VPN
+  # @default -- ""
+  existingSecret: ""
+  # -- Names of keys in existing secret to use for credentials
+  existingKeys:
+    # -- Username key in the secret (same as VPN_PIA_USER env)
+    # @default -- ""
+    usernameKey: ""
+    # -- Password key in the secret (same as VPN_PIA_PASS env)
+    # @default -- ""
+    passwordKey: ""
 
-  # The ingress class that should be used
+  # -- WireGuard configuration to be copied to /config/wireguard/wg0.conf
+  # @default -- ""
+  # @example
+  # config: |
+  #   [Interface]
+  #   PrivateKey = MY-PRIVATE-KEY
+  #   Address = 10.0.0.1/24
+  #   ListenPort = 51820
+  #
+  #   [Peer]
+  #   PublicKey = PEER-PUBLIC-KEY
+  #   AllowedIPs = 0.0.0.0/0
+  config: ""
+
+# Persistent storage configuration
+persistence:
+  # -- Configuration volume settings
+  config:
+    # -- Enable persistent storage for qBittorrent configuration
+    enabled: false
+    # -- Size of the configuration PVC
+    size: "1Gi"
+    # -- Access mode for the configuration PVC
+    accessMode: "ReadWriteOnce"
+    # -- Storage class for the configuration PVC
+    # @default -- "" (uses the default storage class)
+    # storageClass: ""
+    # -- Use an existing PVC for configuration
+    # @default -- ""
+    # existingClaim: ""
+
+  # -- Data volume settings for downloads
+  data:
+    # -- Enable persistent storage for downloads
+    enabled: false
+    # -- Size of the data PVC
+    size: "500Gi"
+    # -- Access mode for the data PVC
+    accessMode: "ReadWriteOnce"
+    # -- Storage class for the data PVC
+    # @default -- "" (uses the default storage class)
+    # storageClass: ""
+    # -- Use an existing PVC for data
+    # @default -- ""
+    # existingClaim: ""
+
+# Ingress configuration for exposing the qBittorrent UI
+ingress:
+  # -- Enable ingress
+  enabled: false
+  # -- The ingress class that should be used
   className: "nginx"
-
+  # -- Additional annotations for the ingress resource
+  # @default -- {}
+  # @example
+  # annotations:
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: "true"
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # -- Host configuration for the ingress
   hosts:
     - host: chart-example.local
       paths:
         - path: /
           pathType: ImplementationSpecific
+  # -- TLS configuration for the ingress
+  # @default -- []
+  # @example
+  # tls:
+  #   - secretName: chart-example-tls
+  #     hosts:
+  #       - chart-example.local
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
+# -- Resource requests and limits for the qBittorrent container
+# @default -- {}
+# @example
+# resources:
+#   limits:
+#     cpu: 100m
+#     memory: 128Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  # resources, such as Minikube.
 
-# Common Labels for all resources created by this chart.
+# -- Common labels for all resources created by this chart
+# @default -- {}
 commonLabels: {}
 
-## Pod Affinity settings
-## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
-##
+# -- Pod affinity/anti-affinity settings
+# @default -- {}
+# @see https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
 affinity: {}
   # Example for node affinity:
   # nodeAffinity:

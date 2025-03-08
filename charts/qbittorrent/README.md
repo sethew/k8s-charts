@@ -1,6 +1,6 @@
 # QBittorrent Chart
 
-![Version: 1.3.2](https://img.shields.io/badge/Version-1.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: legacy-4.3.9](https://img.shields.io/badge/AppVersion-legacy--4.3.9-informational?style=flat-square)
+![Version: 1.3.3](https://img.shields.io/badge/Version-1.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: legacy-4.3.9](https://img.shields.io/badge/AppVersion-legacy--4.3.9-informational?style=flat-square)
 
 A Helm chart for deploying a QBittorrent client that uses a wireguard VPN tunnel.
 
@@ -92,58 +92,56 @@ To control qBittorrent, access the WebUI at: http://localhost:8080
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| affinity | object | `{}` |  |
-| commonLabels | object | `{}` |  |
-| env.PGID | int | `1000` |  |
-| env.PRIVOXY_ENABLED | bool | `false` |  |
-| env.PUID | int | `1000` |  |
-| env.TZ | string | `"Etc/UTC"` |  |
-| env.UMASK | int | `2` |  |
-| env.UNBOUND_ENABLED | bool | `false` |  |
-| env.VPN_AUTO_PORT_FORWARD | bool | `true` |  |
-| env.VPN_AUTO_PORT_FORWARD_TO_PORTS | string | `""` |  |
-| env.VPN_CONF | string | `"wg0"` |  |
-| env.VPN_EXPOSE_PORTS_ON_LAN | string | `""` |  |
-| env.VPN_FIREWALL_TYPE | string | `"auto"` |  |
-| env.VPN_HEALTHCHECK_ENABLED | bool | `true` |  |
-| env.VPN_KEEP_LOCAL_DNS | bool | `false` |  |
-| env.VPN_LAN_LEAK_ENABLED | bool | `false` |  |
-| env.VPN_LAN_NETWORK | string | `"192.168.1.0/24"` |  |
-| env.VPN_PIA_DIP_TOKEN | string | `"no"` |  |
-| env.VPN_PIA_PASS | string | `""` |  |
-| env.VPN_PIA_PORT_FORWARD_PERSIST | bool | `false` |  |
-| env.VPN_PIA_PREFERRED_REGION | string | `""` |  |
-| env.VPN_PIA_USER | string | `""` |  |
-| env.WEBUI_PORTS | string | `"8080/tcp,8080/udp"` |  |
-| extraEnv | list | `[]` |  |
-| fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"hotio/qbittorrent"` |  |
-| image.tag | string | `""` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `"nginx"` |  |
-| ingress.enabled | bool | `false` |  |
-| ingress.hosts[0].host | string | `"chart-example.local"` |  |
-| ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| ingress.tls | list | `[]` |  |
-| nameOverride | string | `""` |  |
-| persistence.config.accessMode | string | `"ReadWriteOnce"` |  |
-| persistence.config.enabled | bool | `false` |  |
-| persistence.config.size | string | `"1Gi"` |  |
-| persistence.data.accessMode | string | `"ReadWriteOnce"` |  |
-| persistence.data.enabled | bool | `false` |  |
-| persistence.data.size | string | `"500Gi"` |  |
-| replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
-| service.port | int | `8080` |  |
-| service.type | string | `"ClusterIP"` |  |
-| vpn.config | string | `""` |  |
-| vpn.enabled | bool | `false` |  |
-| vpn.existingKeys.passwordKey | string | `""` |  |
-| vpn.existingKeys.usernameKey | string | `""` |  |
-| vpn.existingSecret | string | `""` |  |
-| vpn.provider | string | `"pia"` |  |
+| affinity | object | {} | Pod affinity/anti-affinity settings @see https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity |
+| commonLabels | object | {} | Common labels for all resources created by this chart |
+| env.PGID | int | `1000` | The group ID (GID) for running the container Ensures files are created with the correct group ownership |
+| env.PUID | int | `1000` | The user ID (UID) for running the container Ensures files are created with the correct user ownership |
+| env.TZ | string | "Etc/UTC" | Timezone setting |
+| env.UMASK | int | `2` | The file permission mask Controls default file and directory permissions 002 means new files will have 664 (-rw-rw-r--) and directories 775 (drwxrwxr-x) |
+| env.VPN_AUTO_PORT_FORWARD | bool | `true` | Enables automatic port forwarding through the VPN This is often necessary for torrenting to allow incoming connections |
+| env.VPN_AUTO_PORT_FORWARD_TO_PORTS | string | "" | Specific ports to forward if VPN_AUTO_PORT_FORWARD is enabled Leave empty to let the VPN provider choose |
+| env.VPN_CONF | string | `"wg0"` | The VPN configuration file to use Typically set to 'wg0' for WireGuard or 'openvpn' for OpenVPN configurations |
+| env.VPN_EXPOSE_PORTS_ON_LAN | string | "" | Ports to be exposed to the LAN network Leave empty to disable or specify ports if needed |
+| env.VPN_FIREWALL_TYPE | string | `"auto"` | Configures the type of firewall to use with the VPN 'auto' lets the container decide based on the VPN type |
+| env.VPN_HEALTHCHECK_ENABLED | bool | `true` | Enables health checks to ensure the VPN connection is active If the VPN connection drops, the container may restart or stop |
+| env.VPN_KEEP_LOCAL_DNS | bool | `false` | Keeps the local DNS settings when the VPN is connected Set to 'false' to use the DNS provided by the VPN |
+| env.VPN_LAN_LEAK_ENABLED | bool | `false` | Determines if LAN traffic should bypass the VPN Set to 'false' to prevent local network traffic from leaking outside the VPN tunnel |
+| env.VPN_LAN_NETWORK | string | `"192.168.1.0/24"` | The LAN network IP range that should bypass the VPN Useful for allowing local network access while the VPN is active |
+| env.VPN_PIA_DIP_TOKEN | string | `"no"` | PIA Dedicated IP token Set to 'no' if not using a dedicated IP with PIA |
+| env.VPN_PIA_PASS | string | "" | Private Internet Access (PIA) password Overrides the VPN section secret if provided |
+| env.VPN_PIA_PORT_FORWARD_PERSIST | bool | `false` | If true, persists the port forwarding setting across sessions Useful if consistent port forwarding is required |
+| env.VPN_PIA_PREFERRED_REGION | string | "" | Preferred region for the PIA VPN Leave empty to let PIA choose the optimal server automatically |
+| env.VPN_PIA_USER | string | "" | Private Internet Access (PIA) username Overrides the VPN section secret if provided |
+| env.WEBUI_PORTS | string | "8080/tcp,8080/udp" | Ports for the qBittorrent Web UI |
+| fullnameOverride | string | `""` | Override the full name of the chart |
+| image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| image.repository | string | `"hotio/qbittorrent"` | Docker image repository for qBittorrent |
+| image.tag | string | "" (uses appVersion from chart, typically 4.3.9 which is stable with no memory leaks) | Docker image tag |
+| ingress.annotations | object | {} | Additional annotations for the ingress resource @example annotations:   kubernetes.io/ingress.class: nginx   kubernetes.io/tls-acme: "true" |
+| ingress.className | string | `"nginx"` | The ingress class that should be used |
+| ingress.enabled | bool | `false` | Enable ingress |
+| ingress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Host configuration for the ingress |
+| ingress.tls | list | [] | TLS configuration for the ingress @example tls:   - secretName: chart-example-tls     hosts:       - chart-example.local |
+| nameOverride | string | `""` | Override the name of the chart |
+| persistence.config | object | `{"accessMode":"ReadWriteOnce","enabled":false,"size":"1Gi"}` | Configuration volume settings |
+| persistence.config.accessMode | string | `"ReadWriteOnce"` | Access mode for the configuration PVC |
+| persistence.config.enabled | bool | `false` | Enable persistent storage for qBittorrent configuration |
+| persistence.config.size | string | `"1Gi"` | Size of the configuration PVC |
+| persistence.data | object | `{"accessMode":"ReadWriteOnce","enabled":false,"size":"500Gi"}` | Data volume settings for downloads |
+| persistence.data.accessMode | string | `"ReadWriteOnce"` | Access mode for the data PVC |
+| persistence.data.enabled | bool | `false` | Enable persistent storage for downloads |
+| persistence.data.size | string | `"500Gi"` | Size of the data PVC |
+| replicaCount | int | `1` | Number of replicas to be deployed |
+| resources | object | {} | Resource requests and limits for the qBittorrent container @example resources:   limits:     cpu: 100m     memory: 128Mi   requests:     cpu: 100m     memory: 128Mi |
+| service.port | int | `8080` | Port for the qBittorrent WebUI |
+| service.type | string | ClusterIP (LoadBalancer not assumed to be available to all users) | Service type |
+| vpn.config | string | "" | WireGuard configuration to be copied to /config/wireguard/wg0.conf @example config: |   [Interface]   PrivateKey = MY-PRIVATE-KEY   Address = 10.0.0.1/24   ListenPort = 51820    [Peer]   PublicKey = PEER-PUBLIC-KEY   AllowedIPs = 0.0.0.0/0 |
+| vpn.enabled | bool | `false` | Enable VPN support (same as VPN_ENABLED env var) |
+| vpn.existingKeys | object | `{"passwordKey":"","usernameKey":""}` | Names of keys in existing secret to use for credentials |
+| vpn.existingKeys.passwordKey | string | "" | Password key in the secret (same as VPN_PIA_PASS env) |
+| vpn.existingKeys.usernameKey | string | "" | Username key in the secret (same as VPN_PIA_USER env) |
+| vpn.existingSecret | string | "" | Name of existing secret to use for PIA VPN |
+| vpn.provider | string | `"pia"` | VPN provider, currently supports PIA (same as VPN_PROVIDER env) |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
