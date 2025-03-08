@@ -1,6 +1,6 @@
 # QBittorrent Chart
 
-![Version: 1.3.3](https://img.shields.io/badge/Version-1.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: legacy-4.3.9](https://img.shields.io/badge/AppVersion-legacy--4.3.9-informational?style=flat-square)
+![Version: 1.3.4](https://img.shields.io/badge/Version-1.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: legacy-4.3.9](https://img.shields.io/badge/AppVersion-legacy--4.3.9-informational?style=flat-square)
 
 A Helm chart for deploying a QBittorrent client that uses a wireguard VPN tunnel.
 
@@ -116,25 +116,23 @@ To control qBittorrent, access the WebUI at: http://localhost:8080
 | fullnameOverride | string | `""` | Override the full name of the chart |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"hotio/qbittorrent"` | Docker image repository for qBittorrent |
-| image.tag | string | "" (uses appVersion from chart, typically 4.3.9 which is stable with no memory leaks) | Docker image tag |
+| image.tag | string | `""` | Docker image tag |
 | ingress.annotations | object | {} | Additional annotations for the ingress resource @example annotations:   kubernetes.io/ingress.class: nginx   kubernetes.io/tls-acme: "true" |
 | ingress.className | string | `"nginx"` | The ingress class that should be used |
 | ingress.enabled | bool | `false` | Enable ingress |
-| ingress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Host configuration for the ingress |
+| ingress.hosts | list | "chart-example.local" | Host configuration for the ingress |
 | ingress.tls | list | [] | TLS configuration for the ingress @example tls:   - secretName: chart-example-tls     hosts:       - chart-example.local |
 | nameOverride | string | `""` | Override the name of the chart |
-| persistence.config | object | `{"accessMode":"ReadWriteOnce","enabled":false,"size":"1Gi"}` | Configuration volume settings |
 | persistence.config.accessMode | string | `"ReadWriteOnce"` | Access mode for the configuration PVC |
 | persistence.config.enabled | bool | `false` | Enable persistent storage for qBittorrent configuration |
 | persistence.config.size | string | `"1Gi"` | Size of the configuration PVC |
-| persistence.data | object | `{"accessMode":"ReadWriteOnce","enabled":false,"size":"500Gi"}` | Data volume settings for downloads |
 | persistence.data.accessMode | string | `"ReadWriteOnce"` | Access mode for the data PVC |
 | persistence.data.enabled | bool | `false` | Enable persistent storage for downloads |
 | persistence.data.size | string | `"500Gi"` | Size of the data PVC |
 | replicaCount | int | `1` | Number of replicas to be deployed |
 | resources | object | {} | Resource requests and limits for the qBittorrent container @example resources:   limits:     cpu: 100m     memory: 128Mi   requests:     cpu: 100m     memory: 128Mi |
 | service.port | int | `8080` | Port for the qBittorrent WebUI |
-| service.type | string | ClusterIP (LoadBalancer not assumed to be available to all users) | Service type |
+| service.type | string | `"ClusterIP"` | Service type |
 | vpn.config | string | "" | WireGuard configuration to be copied to /config/wireguard/wg0.conf @example config: |   [Interface]   PrivateKey = MY-PRIVATE-KEY   Address = 10.0.0.1/24   ListenPort = 51820    [Peer]   PublicKey = PEER-PUBLIC-KEY   AllowedIPs = 0.0.0.0/0 |
 | vpn.enabled | bool | `false` | Enable VPN support (same as VPN_ENABLED env var) |
 | vpn.existingKeys | object | `{"passwordKey":"","usernameKey":""}` | Names of keys in existing secret to use for credentials |

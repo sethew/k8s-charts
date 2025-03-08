@@ -3,7 +3,6 @@ image:
   # -- Docker image repository for qBittorrent
   repository: hotio/qbittorrent
   # -- Docker image tag
-  # @default -- "" (uses appVersion from chart, typically 4.3.9 which is stable with no memory leaks)
   tag: ""
   # -- Image pull policy
   pullPolicy: IfNotPresent
@@ -19,7 +18,6 @@ replicaCount: 1
 # Service configuration for qBittorrent
 service:
   # -- Service type
-  # @default -- ClusterIP (LoadBalancer not assumed to be available to all users)
   type: ClusterIP
   # -- Port for the qBittorrent WebUI
   port: 8080
@@ -145,7 +143,7 @@ vpn:
 
 # Persistent storage configuration
 persistence:
-  # -- Configuration volume settings
+  # Configuration volume settings
   config:
     # -- Enable persistent storage for qBittorrent configuration
     enabled: false
@@ -160,7 +158,7 @@ persistence:
     # @default -- ""
     # existingClaim: ""
 
-  # -- Data volume settings for downloads
+  # Data volume settings for downloads
   data:
     # -- Enable persistent storage for downloads
     enabled: false
@@ -189,6 +187,7 @@ ingress:
   #   kubernetes.io/tls-acme: "true"
   annotations: {}
   # -- Host configuration for the ingress
+  # @default -- "chart-example.local"
   hosts:
     - host: chart-example.local
       paths:
