@@ -1,7 +1,7 @@
 # Jellyfin Chart
 ===========
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.10.6](https://img.shields.io/badge/AppVersion-10.10.6-informational?style=flat-square)
+![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.10.6](https://img.shields.io/badge/AppVersion-10.10.6-informational?style=flat-square)
 
 A Helm chart for Jellyfin
 
@@ -57,14 +57,12 @@ The following table lists the configurable parameters of the Jellyfin chart and 
 | ingress.url | string | `""` | The URL for the ingress endpoint to point to the Jellyfin instance |
 | nameOverride | string | `""` | Override the name of the chart |
 | nodeSelector | object | {} | Node selector for the Jellyfin pod assignment |
-| persistence.cache | object | `{"enabled":true,"existingClaim":"","mountPath":"/cache","size":"5Gi","storageClassName":null,"subPath":""}` | Cache directory settings |
 | persistence.cache.enabled | bool | `true` | Enable persistent storage for cache |
 | persistence.cache.existingClaim | string | `""` | Use an existing PVC for cache |
 | persistence.cache.mountPath | string | `"/cache"` | Mount path for cache data |
 | persistence.cache.size | string | `"5Gi"` | Size of the PVC for cache |
 | persistence.cache.storageClassName | string | null | Storage class for the cache PVC |
 | persistence.cache.subPath | string | `""` | Subdirectory to mount |
-| persistence.config | object | `{"enabled":true,"existingClaim":"","mountPath":"/config","size":"20Gi","storageClassName":null,"subPath":""}` | Configuration directory settings |
 | persistence.config.enabled | bool | `true` | Enable persistent storage for configuration |
 | persistence.config.existingClaim | string | `""` | Use an existing PVC for configuration |
 | persistence.config.mountPath | string | `"/config"` | Mount path for configuration data |

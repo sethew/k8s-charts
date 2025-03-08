@@ -74,7 +74,7 @@ serviceAccount:
 
 # Persistent storage configuration
 persistence:
-  # -- Configuration directory settings
+  # Configuration directory settings
   config:
     # -- Enable persistent storage for configuration
     enabled: true
@@ -91,7 +91,7 @@ persistence:
     # @default -- null
     storageClassName: null
 
-  # -- Cache directory settings
+  # Cache directory settings
   cache:
     # -- Enable persistent storage for cache
     enabled: true
