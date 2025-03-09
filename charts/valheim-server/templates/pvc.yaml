@@ -43,9 +43,7 @@ spec:
       storage: {{ .Values.persistence.server.size }}
 {{- end }}
 
-{{- if and .Values.persistence.enabled 
-           (not .Values.persistence.backups.existingClaim) 
-           (eq (.Values.automation.autoBackup | toString) "1") }}
+{{- if and .Values.persistence.enabled (not .Values.persistence.backups.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

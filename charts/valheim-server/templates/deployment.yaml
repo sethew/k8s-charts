@@ -52,10 +52,14 @@ spec:
             - name: PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "valheim.fullname" . }}
+                  name: {{ include "valheim-server.fullname" . }}
                   key: server-password
             - name: TZ
               value: "{{ .Values.server.timezone }}"
+            - name: PUID
+              value: "{{ .Values.securityContext.runAsUser | default "111" }}"
+            - name: PGID
+              value: "{{ .Values.securityContext.runAsGroup | default "1000" }}"
             - name: PUBLIC
               value: "{{ .Values.server.public }}"
             - name: AUTO_UPDATE
@@ -108,10 +112,8 @@ spec:
               mountPath: /home/steam/.config/unity3d/IronGate/Valheim
             - name: server
               mountPath: /home/steam/valheim
-            {{- if eq (.Values.automation.autoBackup | toString) "1" }}
             - name: backups
               mountPath: /home/steam/backups
-            {{- end }}
             {{- if eq (.Values.modding.bepInEx | toString) "1" }}
             - name: mods
               mountPath: {{ .Values.modding.modPath }}
@@ -125,20 +127,20 @@ spec:
               command:
                 - pgrep
                 - -f
-                - PalServer-Linux
+                - valheim_server
             initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.startupProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
           {{- end }}
-          # Readiness probe - verify RCON is responsive
+          # Readiness probe - verify is server is ready
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
               command:
-                - bash
-                - -c
-                - 'rcon-cli -a localhost:{{ .Values.server.rconPort }} -p "${ADMIN_PASSWORD}" "Info" 2>/dev/null | grep -q "Welcome" || exit 1'
+                - pgrep
+                - -f
+                - valheim_server
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -149,9 +151,9 @@ spec:
           livenessProbe:
             exec:
               command:
-                - bash
-                - -c
-                - 'rcon-cli -a localhost:{{ .Values.server.rconPort }} -p "${ADMIN_PASSWORD}" "Info" 2>/dev/null | grep -q "Welcome" || exit 1'
+                - pgrep
+                - -f
+                - valheim_server
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
@@ -178,7 +180,6 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        {{- if eq (.Values.automation.autoBackup | toString) "1" }}
         - name: backups
           {{- if and .Values.persistence.enabled .Values.persistence.backups.existingClaim }}
           persistentVolumeClaim:
@@ -189,7 +190,6 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        {{- end }}
         {{- if eq (.Values.modding.bepInEx | toString) "1" }}
         - name: mods
           emptyDir: {}

@@ -47,11 +47,11 @@ automation:
   # -- Remove old backups automatically (1=enabled, 0=disabled)
   autoBackupRemoveOld: 1
   # -- Number of days to keep backups
-  autoBackupDaysToLive: 3
+  autoBackupDaysToLive: 7
   # -- Create backup before updates (1=enabled, 0=disabled)
   autoBackupOnUpdate: 1
   # -- Create backup on server shutdown (1=enabled, 0=disabled)
-  autoBackupOnShutdown: 1
+  autoBackupOnShutdown: 0
 
 # Notification settings for server events
 notifications:
@@ -78,7 +78,7 @@ persistence:
   # -- Storage class to use (use null for default or "" for no storage class)
   # @default -- use default storage class
   storageClass: null
-  
+
   # Data volume configuration for game saves
   saves:
     # -- Size of PVC for game saves
@@ -87,7 +87,7 @@ persistence:
     accessMode: ReadWriteOnce
     # -- Existing claim to use (leave empty to create a new one)
     existingClaim: ""
-    
+
   # Data volume configuration for server files
   server:
     # -- Size of PVC for server files
@@ -96,7 +96,7 @@ persistence:
     accessMode: ReadWriteOnce
     # -- Existing claim to use (leave empty to create a new one)
     existingClaim: ""
-    
+
   # Data volume configuration for backups. Requires "autoBackup: 1".
   backups:
     # -- Size of PVC for backups
@@ -173,8 +173,8 @@ podSecurityContext:
 # The user/group IDs must match those used in the container image.
 # @descriptionEnd
 securityContext:
-  # -- User ID to run the container processes
-  runAsUser: 1000
+  # -- User ID to run the container processes. Should default to the steam user ID.
+  runAsUser: 111
   # -- Group ID to run the container processes
   runAsGroup: 1000
   # -- Force the container to run as a non-root user
@@ -194,20 +194,6 @@ startupProbe:
   # @default -- 30 (allows up to 5 minutes for initial startup)
   failureThreshold: 30
 
-# Kubernetes liveness probe configuration
-livenessProbe:
-  # -- Enable liveness probe
-  enabled: true
-  # -- Initial delay seconds
-  initialDelaySeconds: 60
-  # -- Period seconds
-  periodSeconds: 20
-  # -- Timeout seconds
-  timeoutSeconds: 5
-  # -- Failure threshold
-  # @default -- 6 (allows up to 2 minutes for recovery)
-  failureThreshold: 6
-
 # Kubernetes readiness probe configuration
 readinessProbe:
   # -- Enable readiness probe
@@ -221,3 +207,17 @@ readinessProbe:
   # -- Failure threshold
   # @default -- 20 (allows up to 5 minutes for readiness)
   failureThreshold: 20
+
+# Kubernetes liveness probe configuration
+livenessProbe:
+  # -- Enable liveness probe
+  enabled: false
+  # -- Initial delay seconds
+  initialDelaySeconds: 60
+  # -- Period seconds
+  periodSeconds: 20
+  # -- Timeout seconds
+  timeoutSeconds: 5
+  # -- Failure threshold
+  # @default -- 6 (allows up to 2 minutes for recovery)
+  failureThreshold: 6

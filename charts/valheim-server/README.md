@@ -1,6 +1,6 @@
 # valheim-server
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.1.0](https://img.shields.io/badge/AppVersion-3.1.0-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.1.0](https://img.shields.io/badge/AppVersion-3.1.0-informational?style=flat-square)
 
 A Helm chart for deploying a Valheim dedicated server on Kubernetes
 
@@ -120,8 +120,8 @@ kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for pod assignment |
 | automation.autoBackup | int | `0` | Enable automatic backups (1=enabled, 0=disabled) |
-| automation.autoBackupDaysToLive | int | `3` | Number of days to keep backups |
-| automation.autoBackupOnShutdown | int | `1` | Create backup on server shutdown (1=enabled, 0=disabled) |
+| automation.autoBackupDaysToLive | int | `7` | Number of days to keep backups |
+| automation.autoBackupOnShutdown | int | `0` | Create backup on server shutdown (1=enabled, 0=disabled) |
 | automation.autoBackupOnUpdate | int | `1` | Create backup before updates (1=enabled, 0=disabled) |
 | automation.autoBackupRemoveOld | int | `1` | Remove old backups automatically (1=enabled, 0=disabled) |
 | automation.autoBackupSchedule | string | `"*/15 * * * *"` | Cron schedule for automatic backups |
@@ -138,7 +138,7 @@ kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
 | initContainers.command | list | `[]` | Init container command |
 | initContainers.enabled | bool | `false` | Enable init container |
 | initContainers.image | string | `"busybox:latest"` | Init container image |
-| livenessProbe.enabled | bool | `true` | Enable liveness probe |
+| livenessProbe.enabled | bool | `false` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | 6 (allows up to 2 minutes for recovery) | Failure threshold |
 | livenessProbe.initialDelaySeconds | int | `60` | Initial delay seconds |
 | livenessProbe.periodSeconds | int | `20` | Period seconds |
@@ -171,7 +171,7 @@ kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
 | resources | object | `{}` | Resource requests and limits |
 | securityContext.runAsGroup | int | `1000` | Group ID to run the container processes |
 | securityContext.runAsNonRoot | bool | `true` | Force the container to run as a non-root user |
-| securityContext.runAsUser | int | `1000` | User ID to run the container processes |
+| securityContext.runAsUser | int | `111` | User ID to run the container processes. Should default to the steam user ID. |
 | server.name | string | `"Valheim Server with Helm"` | Server name as displayed in-game |
 | server.password | string | you MUST change this value | Server access password (minimum 5 characters) |
 | server.port | int | `2456` | UDP port for game server (will use PORT, PORT+1, and PORT+2) |
