@@ -12,8 +12,8 @@ enshrouded:
   serverPassword: "changeme"
   # -- Maximum number of players
   maxPlayers: 16
-  # -- Game save interval in seconds
-  saveInterval: 300
+  # -- If you would rather manually supply a config file, set this to true (1)
+  externalConfig: 0
   # -- Server IP address to bind to
   # @default -- 0.0.0.0
   serverIP: "0.0.0.0"
@@ -21,8 +21,6 @@ enshrouded:
   gamePort: 15636
   # -- Query server port (UDP)
   queryPort: 15637
-  # -- TZ environment variable for server time zone
-  timeZone: "UTC"
 
 # Enshrouded Extra Server Configuration
 configMap:
