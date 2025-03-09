@@ -1,0 +1,8 @@
+# ct-install-skip.yaml -- Avoid issues with Github Actions Kind Cluster during "ct install".
+chart-dirs:
+  - charts
+excluded-charts:
+  - palworld-server
+  - enshrouded-server
+  - valheim-server
+target-branch: main
