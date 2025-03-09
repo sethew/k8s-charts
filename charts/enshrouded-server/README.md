@@ -1,6 +1,6 @@
 # Enshrouded Server Helm Chart
 
-![Version: 1.0.6](https://img.shields.io/badge/Version-1.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: proton-v2.1.6](https://img.shields.io/badge/AppVersion-proton--v2.1.6-informational?style=flat-square)
+![Version: 1.0.7](https://img.shields.io/badge/Version-1.0.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: proton-v2.1.6](https://img.shields.io/badge/AppVersion-proton--v2.1.6-informational?style=flat-square)
 
 A Helm chart for Enshrouded Dedicated Game Server
 
@@ -183,14 +183,13 @@ Enshrouded savegame files are typically located at:
 | affinity | object | `{}` | Affinity for pod assignment @type -- object |
 | configMap.data | object | `{}` | Additional environment variables @type -- object |
 | configMap.enabled | bool | `true` | Enable additional configuration via ConfigMap |
+| enshrouded.externalConfig | int | `0` | If you would rather manually supply a config file, set this to true (1) |
 | enshrouded.gamePort | int | `15636` | Game server port (UDP) |
 | enshrouded.maxPlayers | int | `16` | Maximum number of players |
 | enshrouded.queryPort | int | `15637` | Query server port (UDP) |
-| enshrouded.saveInterval | int | `300` | Game save interval in seconds |
 | enshrouded.serverIP | string | 0.0.0.0 | Server IP address to bind to |
 | enshrouded.serverName | string | `"My Enshrouded Server"` | Server name displayed in the server browser |
 | enshrouded.serverPassword | string | `"changeme"` | Server password (leave blank for no password) |
-| enshrouded.timeZone | string | `"UTC"` | TZ environment variable for server time zone |
 | fullnameOverride | string | `""` | Override the full name of the chart |
 | image.pullPolicy | string | `"Always"` | Image pull policy |
 | image.repository | string | `"sknnr/enshrouded-dedicated-server"` | Repository for the Enshrouded Server image |

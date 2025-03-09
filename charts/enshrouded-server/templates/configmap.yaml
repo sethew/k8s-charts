@@ -9,9 +9,8 @@ data:
   SERVER_IP: "{{ .Values.enshrouded.serverIP }}"
   GAME_PORT: "{{ .Values.enshrouded.gamePort }}"
   QUERY_PORT: "{{ .Values.enshrouded.queryPort }}"
-  MAX_PLAYERS: "{{ .Values.enshrouded.maxPlayers }}"
-  SAVE_INTERVAL: "{{ .Values.enshrouded.saveInterval }}"
-  TZ: "{{ .Values.enshrouded.timeZone }}"
+  SERVER_SLOTS: "{{ .Values.enshrouded.maxPlayers }}"
+  EXTERNAL_CONFIG: "{{ .Values.enshrouded.externalConfig }}"
   {{- if .Values.configMap.enabled }}
   {{- range $key, $val := .Values.configMap.data }}
   {{ $key }}: "{{ $val }}"
