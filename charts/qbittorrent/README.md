@@ -92,7 +92,7 @@ To control qBittorrent, access the WebUI at: http://localhost:8080
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| affinity | object | {} | Pod affinity/anti-affinity settings @see https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity |
+| affinity | object | `{}` | Pod affinity/anti-affinity settings |
 | commonLabels | object | {} | Common labels for all resources created by this chart |
 | env.PGID | int | `1000` | The group ID (GID) for running the container Ensures files are created with the correct group ownership |
 | env.PUID | int | `1000` | The user ID (UID) for running the container Ensures files are created with the correct user ownership |

@@ -6,8 +6,8 @@ This Helm chart deploys a Palworld dedicated game server on a Kubernetes cluster
 
 ## Prerequisites
 
-- Kubernetes 1.19+
-- Helm 3.2.0+
+- Kubernetes 1.29+
+- Helm 3.16.0+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 
 ## Important Notes

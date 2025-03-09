@@ -221,9 +221,8 @@ resources: {}
 # @default -- {}
 commonLabels: {}
 
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
 # -- Pod affinity/anti-affinity settings
-# @default -- {}
-# @see https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
 affinity: {}
   # Example for node affinity:
   # nodeAffinity:
