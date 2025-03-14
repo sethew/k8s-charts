@@ -9,6 +9,9 @@ To learn more about the release, try:
 
 Server Information:
   - Game Port: {{ .Values.server.port }} UDP
+  {{- if .Values.server.community }}
+  - Query Port: 27015 UDP
+  {{- end }}
   {{- if .Values.server.rconEnabled }}
   - RCON Port: {{ .Values.server.rconPort }} TCP
   {{- end }}
