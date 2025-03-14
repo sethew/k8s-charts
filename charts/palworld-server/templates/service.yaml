@@ -24,5 +24,11 @@ spec:
       protocol: TCP
       name: rcon
     {{- end }}
+    {{- if .Values.server.community }}
+    - port: 27015
+      targetPort: query
+      protocol: UDP
+      name: query
+    {{- end }}
   selector:
     {{- include "palworld-server.selectorLabels" . | nindent 4 }}

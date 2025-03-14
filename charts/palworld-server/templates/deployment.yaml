@@ -48,6 +48,11 @@ spec:
               containerPort: {{ .Values.server.rconPort }}
               protocol: TCP
             {{- end }}
+            {{- if .Values.server.community }}
+            - name: query
+              containerPort: 27015
+              protocol: UDP
+            {{- end }}
           volumeMounts:
             - name: data
               mountPath: /palworld
