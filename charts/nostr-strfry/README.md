@@ -37,16 +37,16 @@ The following table lists the configurable parameters for the nostr-strfry chart
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | config.db | string | `"./strfry-db/"` | Directory that contains the strfry LMDB database |
-| config.dbParams.mapsize | int | `10995116277760` | Size of mmap() to use when loading LMDB (default is 10TB) |
+| config.dbParams.mapsize | string | `"10995116277760"` | Size of mmap() to use when loading LMDB (default is 10TB) |
 | config.dbParams.maxreaders | int | `256` | Maximum number of threads/processes that can simultaneously have LMDB transactions open |
 | config.dbParams.noReadAhead | bool | `false` | Disables read-ahead when accessing the LMDB mapping |
 | config.events.ephemeralEventsLifetimeSeconds | int | `300` | Ephemeral events will be deleted from the DB when older than this (in seconds) |
-| config.events.maxEventSize | int | `65536` | Maximum size of normalised JSON, in bytes |
+| config.events.maxEventSize | string | `"65536"` | Maximum size of normalised JSON, in bytes |
 | config.events.maxNumTags | int | `2000` | Maximum number of tags allowed |
 | config.events.maxTagValSize | int | `1024` | Maximum size for tag values, in bytes |
 | config.events.rejectEphemeralEventsOlderThanSeconds | int | `60` | Ephemeral events older than this (in seconds) will be rejected |
 | config.events.rejectEventsNewerThanSeconds | int | `900` | Events newer than this (in seconds) will be rejected |
-| config.events.rejectEventsOlderThanSeconds | int | `94608000` | Events older than this (in seconds) will be rejected |
+| config.events.rejectEventsOlderThanSeconds | string | `"94608000"` | Events older than this (in seconds) will be rejected |
 | config.relay.autoPingSeconds | int | `55` | Websocket-level PING message frequency (seconds) |
 | config.relay.bind | string | `"127.0.0.1"` | Interface to listen on (Use 0.0.0.0 to listen on all interfaces) |
 | config.relay.compression.enabled | bool | `true` | Enable permessage-deflate compression if supported by client |
@@ -66,16 +66,16 @@ The following table lists the configurable parameters for the nostr-strfry chart
 | config.relay.maxFilterLimit | int | `500` | Maximum records that can be returned per filter |
 | config.relay.maxReqFilterSize | int | `200` | Maximum number of filters allowed in a REQ |
 | config.relay.maxSubsPerConnection | int | `20` | Maximum number of subscriptions a connection can have open |
-| config.relay.maxWebsocketPayloadSize | int | `131072` | Maximum accepted incoming websocket frame size (bytes) |
+| config.relay.maxWebsocketPayloadSize | string | `"131072"` | Maximum accepted incoming websocket frame size (bytes) |
 | config.relay.negentropy.enabled | bool | `true` | Support negentropy protocol messages |
-| config.relay.negentropy.maxSyncEvents | int | `1000000` | Maximum records that sync will process before returning an error |
-| config.relay.nofiles | int | `1000000` | OS-limit on maximum number of open files/sockets (if 0, don't attempt to set) |
+| config.relay.negentropy.maxSyncEvents | string | `"1000000"` | Maximum records that sync will process before returning an error |
+| config.relay.nofiles | string | `"1000000"` | OS-limit on maximum number of open files/sockets (if 0, don't attempt to set) |
 | config.relay.numThreads.ingester | int | `3` | Ingester threads: route incoming requests, validate events/sigs |
 | config.relay.numThreads.negentropy | int | `2` | negentropy threads: Handle negentropy protocol messages |
 | config.relay.numThreads.reqMonitor | int | `3` | reqMonitor threads: Handle filtering of new events |
 | config.relay.numThreads.reqWorker | int | `3` | reqWorker threads: Handle initial DB scan for events |
 | config.relay.port | int | `7777` | Port to open for the nostr websocket protocol |
-| config.relay.queryTimesliceBudgetMicroseconds | int | `10000` | Uninterrupted CPU time for a REQ query during DB scan (microseconds) |
+| config.relay.queryTimesliceBudgetMicroseconds | string | `"10000"` | Uninterrupted CPU time for a REQ query during DB scan (microseconds) |
 | config.relay.realIpHeader | string | `""` | HTTP header that contains the client's real IP, before reverse proxying (must be all lower-case) |
 | config.relay.writePolicy.plugin | string | `""` | Path to an executable script that implements the writePolicy plugin logic |
 | fullnameOverride | string | `""` | String to fully override nostr-relay.fullname template |

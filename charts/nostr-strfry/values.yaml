@@ -102,17 +102,17 @@ config:
     # -- Maximum number of threads/processes that can simultaneously have LMDB transactions open
     maxreaders: 256
     # -- Size of mmap() to use when loading LMDB (default is 10TB)
-    mapsize: 10995116277760
+    mapsize: "10995116277760"
     # -- Disables read-ahead when accessing the LMDB mapping
     noReadAhead: false
 
   events:
     # -- Maximum size of normalised JSON, in bytes
-    maxEventSize: 65536
+    maxEventSize: "65536"
     # -- Events newer than this (in seconds) will be rejected
     rejectEventsNewerThanSeconds: 900
     # -- Events older than this (in seconds) will be rejected
-    rejectEventsOlderThanSeconds: 94608000
+    rejectEventsOlderThanSeconds: "94608000"
     # -- Ephemeral events older than this (in seconds) will be rejected
     rejectEphemeralEventsOlderThanSeconds: 60
     # -- Ephemeral events will be deleted from the DB when older than this (in seconds)
@@ -128,7 +128,7 @@ config:
     # -- Port to open for the nostr websocket protocol
     port: 7777
     # -- OS-limit on maximum number of open files/sockets (if 0, don't attempt to set)
-    nofiles: 1000000
+    nofiles: "1000000"
     # -- HTTP header that contains the client's real IP, before reverse proxying (must be all lower-case)
     realIpHeader: ""
     info:
@@ -145,7 +145,7 @@ config:
       # -- List of supported NIPs as JSON array, or empty string to use default
       nips: ""
     # -- Maximum accepted incoming websocket frame size (bytes)
-    maxWebsocketPayloadSize: 131072
+    maxWebsocketPayloadSize: "131072"
     # -- Maximum number of filters allowed in a REQ
     maxReqFilterSize: 200
     # -- Websocket-level PING message frequency (seconds)
@@ -153,7 +153,7 @@ config:
     # -- Enable TCP keep-alive to detect dropped connections
     enableTcpKeepalive: false
     # -- Uninterrupted CPU time for a REQ query during DB scan (microseconds)
-    queryTimesliceBudgetMicroseconds: 10000
+    queryTimesliceBudgetMicroseconds: "10000"
     # -- Maximum records that can be returned per filter
     maxFilterLimit: 500
     # -- Maximum number of subscriptions a connection can have open
@@ -190,4 +190,4 @@ config:
       # -- Support negentropy protocol messages
       enabled: true
       # -- Maximum records that sync will process before returning an error
-      maxSyncEvents: 1000000
+      maxSyncEvents: "1000000"
