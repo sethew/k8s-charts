@@ -2,7 +2,7 @@ apiVersion: v2
 name: nostr-relay
 description: A Helm chart for deploying a Nostr RS Relay
 type: application
-version: 0.1.0
+version: 1.0.0
 appVersion: "0.9.0"
 home: https://nostr.com/
 icon: https://user-images.githubusercontent.com/99301796/219900773-d6d02038-e2a0-4334-9f28-c14d40ab6fe7.png
