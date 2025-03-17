@@ -1,6 +1,6 @@
 # nostr-relay
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
+![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
 
 A Helm chart for deploying a Nostr RS Relay
 
@@ -36,7 +36,7 @@ The following table lists the configurable parameters for the nostr-relay chart 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| config.info.description | string | `"A newly created nostr-rs-relay.\n\nCustomize this with your own info."` | Description of your relay (required) |
+| config.info.description | string | `"A nostr-rs-relay on kubernetes."` | Description of your relay (required) |
 | config.info.name | string | `"nostr-rs-relay"` | Name of your relay (required) |
 | config.info.relay_url | string | `"wss://nostr.k3s.home/"` | The public-facing URL of your relay with the websocket schema (required) |
 | config.limits.limit_scrapers | bool | `false` | Rejects imprecise requests (kind only and author only etc) |
@@ -49,23 +49,25 @@ The following table lists the configurable parameters for the nostr-relay chart 
 | image.repository | string | `"scsibug/nostr-rs-relay"` | Nostr relay Docker image repository |
 | image.tag | string | `""` | Overrides the image tag. Default is the chart appVersion |
 | imagePullSecrets | list | `[]` | Specify imagePullSecrets if your Docker repository requires authentication |
-| ingress | object | `{"annotations":{},"className":"","enabled":false,"hosts":[{"host":"nostr.k3s.home","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Ingress configuration for the nostr relay |
 | ingress.annotations | object | `{}` | Additional ingress annotations |
 | ingress.className | string | `""` | Ingress class name |
 | ingress.enabled | bool | `false` | Enable ingress resource |
-| ingress.hosts | list | `[{"host":"nostr.k3s.home","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | List of ingress hosts |
+| ingress.hosts | list | [{ host: nostr.k3s.home }] | List of ingress hosts |
 | ingress.tls | list | `[]` | Ingress TLS configuration |
 | nameOverride | string | `""` | String to partially override nostr-relay.fullname template |
-| persistence | object | `{"accessMode":"ReadWriteOnce","enabled":true,"size":"10Gi","storageClass":""}` | Persistence configuration for the nostr relay database |
 | persistence.accessMode | string | `"ReadWriteOnce"` | Access mode for the persistent volume |
 | persistence.enabled | bool | `true` | Enable persistent storage for the database |
 | persistence.size | string | `"10Gi"` | Size of the persistent volume |
 | persistence.storageClass | string | `""` | StorageClass name. If empty, uses the default provisioner. |
 | podAnnotations | object | `{}` | Annotations to be added to the pod |
-| podSecurityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsUser":1000}` | Security context for the pod |
+| podSecurityContext.fsGroup | int | `1000` | Group ID for filesystem access |
+| podSecurityContext.runAsGroup | int | `1000` | Group ID for the pod |
+| podSecurityContext.runAsUser | int | `1000` | User ID for the pod |
 | replicaCount | int | `1` | Number of nostr-relay replicas |
 | resources | object | `{}` | Resource limits and requests for the relay |
-| securityContext | object | `{"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | Security context for the container |
+| securityContext.runAsGroup | int | `1000` | Group ID to run the container |
+| securityContext.runAsNonRoot | bool | `true` | Run container as non-root user |
+| securityContext.runAsUser | int | `1000` | User ID to run the container |
 | service.port | int | `8080` | Kubernetes Service port |
 | service.type | string | `"ClusterIP"` | Kubernetes Service type |
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created |

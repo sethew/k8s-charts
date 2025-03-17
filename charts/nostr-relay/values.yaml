@@ -25,16 +25,22 @@ serviceAccount:
 # -- Annotations to be added to the pod
 podAnnotations: {}
 
-# -- Security context for the pod
+# Security context for the pod
 podSecurityContext:
+  # -- Group ID for filesystem access
   fsGroup: 1000
+  # -- User ID for the pod
   runAsUser: 1000
+  # -- Group ID for the pod
   runAsGroup: 1000
 
-# -- Security context for the container
+# Security context for the container
 securityContext:
+  # -- User ID to run the container
   runAsUser: 1000
+  # -- Group ID to run the container
   runAsGroup: 1000
+  # -- Run container as non-root user
   runAsNonRoot: true
 
 service:
@@ -43,7 +49,7 @@ service:
   # -- Kubernetes Service port
   port: 8080
 
-# -- Ingress configuration for the nostr relay
+# Ingress configuration for the nostr relay
 ingress:
   # -- Enable ingress resource
   enabled: false
@@ -52,6 +58,7 @@ ingress:
   # -- Additional ingress annotations
   annotations: {}
   # -- List of ingress hosts
+  # @default -- [{ host: nostr.k3s.home }]
   hosts:
     - host: nostr.k3s.home
       paths:
@@ -72,7 +79,7 @@ resources: {}
   #   cpu: 100m
   #   memory: 256Mi
 
-# -- Persistence configuration for the nostr relay database
+# Persistence configuration for the nostr relay database
 persistence:
   # -- Enable persistent storage for the database
   enabled: true
@@ -92,7 +99,7 @@ config:
     # -- Name of your relay (required)
     name: "nostr-rs-relay"
     # -- Description of your relay (required)
-    description: "A newly created nostr-rs-relay.\n\nCustomize this with your own info."
+    description: "A nostr-rs-relay on kubernetes."
     # -- Public key of the relay administrator (hexadecimal string)
     # pubkey: ""
     # -- Administrative contact for the relay
