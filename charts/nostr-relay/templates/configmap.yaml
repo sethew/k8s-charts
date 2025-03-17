@@ -1,0 +1,304 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nostr-relay.fullname" . }}-config
+  labels:
+    {{- include "nostr-relay.labels" . | nindent 4 }}
+data:
+  config.toml: |
+    # Nostr-rs-relay configuration
+
+    [info]
+    # The advertised URL for the Nostr websocket.
+    relay_url = {{ .Values.config.info.relay_url | quote }}
+
+    # Relay information for clients.
+    name = {{ .Values.config.info.name | quote }}
+
+    # Description
+    description = {{ .Values.config.info.description | quote }}
+
+    {{- if hasKey .Values.config.info "pubkey" }}
+    # Administrative contact pubkey (32-byte hex, not npub)
+    pubkey = {{ .Values.config.info.pubkey | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.info "contact" }}
+    # Administrative contact URI
+    contact = {{ .Values.config.info.contact | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.info "favicon" }}
+    # Favicon location
+    favicon = {{ .Values.config.info.favicon | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.info "relay_icon" }}
+    # URL of Relay's icon
+    relay_icon = {{ .Values.config.info.relay_icon | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.info "relay_page" }}
+    # Path to custom relay html page
+    relay_page = {{ .Values.config.info.relay_page | quote }}
+    {{- end }}
+
+    [diagnostics]
+    {{- if hasKey .Values.config "diagnostics" }}
+    {{- if hasKey .Values.config.diagnostics "tracing" }}
+    # Enable tokio tracing
+    tracing = {{ .Values.config.diagnostics.tracing }}
+    {{- end }}
+    {{- end }}
+
+    [database]
+    {{- if hasKey .Values.config "database" }}
+    {{- if hasKey .Values.config.database "engine" }}
+    # Database engine
+    engine = {{ .Values.config.database.engine | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.database "engine" }}
+    # Directory for SQLite files
+    data_directory = {{ .Values.config.database.data_directory | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.database "in_memory" }}
+    # Use in-memory database
+    in_memory = {{ .Values.config.database.in_memory }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.database "min_conn" }}
+    # Minimum number of SQLite reader connections
+    min_conn = {{ .Values.config.database.min_conn }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.database "max_conn" }}
+    # Maximum number of SQLite reader connections
+    max_conn = {{ .Values.config.database.max_conn }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.database "connection" }}
+    # Database connection string
+    connection = {{ .Values.config.database.connection | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.database "connection_write" }}
+    # Database connection string for writing
+    connection_write = {{ .Values.config.database.connection_write | quote }}
+    {{- end }}
+    {{- end }}
+
+    [logging]
+    {{- if hasKey .Values.config "logging" }}
+    {{- if hasKey .Values.config.logging "folder_path" }}
+    # Directory to store log files
+    folder_path = {{ .Values.config.logging.folder_path | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.logging "file_prefix" }}
+    # Log file prefix
+    file_prefix = {{ .Values.config.logging.file_prefix | quote }}
+    {{- end }}
+    {{- end }}
+
+    [grpc]
+    {{- if hasKey .Values.config "grpc" }}
+    {{- if hasKey .Values.config.grpc "event_admission_server" }}
+    # gRPC server for event admission
+    event_admission_server = {{ .Values.config.grpc.event_admission_server | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.grpc "restricts_write" }}
+    # Whether the event admission server denies writes
+    restricts_write = {{ .Values.config.grpc.restricts_write }}
+    {{- end }}
+    {{- end }}
+
+    [network]
+    # Bind to this network address
+    address = {{ .Values.config.network.address | quote }}
+
+    # Listen on this port
+    port = {{ .Values.config.network.port }}
+
+    {{- if hasKey .Values.config.network "remote_ip_header" }}
+    # Header for client IP addresses
+    remote_ip_header = {{ .Values.config.network.remote_ip_header | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.network "ping_interval" }}
+    # Websocket ping interval in seconds
+    ping_interval = {{ .Values.config.network.ping_interval }}
+    {{- end }}
+
+    [options]
+    # Reject events that have timestamps too far in the future
+    reject_future_seconds = {{ .Values.config.options.reject_future_seconds }}
+
+    [limits]
+    {{- if hasKey .Values.config "limits" }}
+    {{- if hasKey .Values.config.limits "messages_per_sec" }}
+    # Limit events created per second
+    messages_per_sec = {{ .Values.config.limits.messages_per_sec }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "subscriptions_per_min" }}
+    # Limit client subscriptions created per minute
+    subscriptions_per_min = {{ .Values.config.limits.subscriptions_per_min }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "db_conns_per_client" }}
+    # Limit concurrent database connections
+    db_conns_per_client = {{ .Values.config.limits.db_conns_per_client }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "max_blocking_threads" }}
+    # Limit blocking threads
+    max_blocking_threads = {{ .Values.config.limits.max_blocking_threads }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "max_event_bytes" }}
+    # Limit maximum EVENT message size
+    max_event_bytes = {{ .Values.config.limits.max_event_bytes }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "max_ws_message_bytes" }}
+    # Maximum WebSocket message size
+    max_ws_message_bytes = {{ .Values.config.limits.max_ws_message_bytes }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "max_ws_frame_bytes" }}
+    # Maximum WebSocket frame size
+    max_ws_frame_bytes = {{ .Values.config.limits.max_ws_frame_bytes }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "broadcast_buffer" }}
+    # Broadcast buffer size
+    broadcast_buffer = {{ .Values.config.limits.broadcast_buffer }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "event_persist_buffer" }}
+    # Event persistence buffer size
+    event_persist_buffer = {{ .Values.config.limits.event_persist_buffer }}
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "event_kind_blacklist" }}
+    # Event kind blacklist
+    event_kind_blacklist = [
+      {{- join ", " .Values.config.limits.event_kind_blacklist | nindent 6 }}
+    ]
+    {{- end }}
+
+    {{- if hasKey .Values.config.limits "event_kind_allowlist" }}
+    # Event kind allowlist
+    event_kind_allowlist = [
+      {{- join ", " .Values.config.limits.event_kind_allowlist | nindent 6 }}
+    ]
+    {{- end }}
+
+    # Rejects imprecise requests
+    limit_scrapers = {{ .Values.config.limits.limit_scrapers }}
+    {{- end }}
+
+    [authorization]
+    {{- if hasKey .Values.config "authorization" }}
+    {{- if hasKey .Values.config.authorization "pubkey_whitelist" }}
+    # Pubkey allowlist
+    pubkey_whitelist = [
+      {{- range .Values.config.authorization.pubkey_whitelist }}
+      {{ . | quote }},
+      {{- end }}
+    ]
+    {{- end }}
+    {{- if hasKey .Values.config.authorization "nip42_auth" }}
+    # Enable NIP-42 authentication
+    nip42_auth = {{ .Values.config.authorization.nip42_auth }}
+    {{- end }}
+    {{- if hasKey .Values.config.authorization "nip42_dms" }}
+    # Send DMs only to authenticated recipients
+    nip42_dms = {{ .Values.config.authorization.nip42_dms }}
+    {{- end }}
+    {{- end }}
+
+    [verified_users]
+    {{- if hasKey .Values.config "verified_users" }}
+    {{- if hasKey .Values.config.verified_users "mode" }}
+    # NIP-05 verification mode
+    mode = {{ .Values.config.verified_users.mode | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.verified_users "domain_blacklist" }}
+    # Domain blacklist
+    domain_blacklist = [
+      {{- range .Values.config.verified_users.domain_blacklist }}
+      {{ . | quote }},
+      {{- end }}
+    ]
+    {{- end }}
+    {{- if hasKey .Values.config.verified_users "domain_whitelist" }}
+    # Domain allowlist
+    domain_whitelist = [
+      {{- range .Values.config.verified_users.domain_whitelist }}
+      {{ . | quote }},
+      {{- end }}
+    ]
+    {{- end }}
+    {{- if hasKey .Values.config.verified_users "verify_expiration" }}
+    # Verification expiration time
+    verify_expiration = {{ .Values.config.verified_users.verify_expiration | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.verified_users "verify_update_frequency" }}
+    # Verification update frequency
+    verify_update_frequency = {{ .Values.config.verified_users.verify_update_frequency | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.verified_users "max_consecutive_failures" }}
+    # Maximum consecutive verification failures
+    max_consecutive_failures = {{ .Values.config.verified_users.max_consecutive_failures }}
+    {{- end }}
+    {{- end }}
+
+    [pay_to_relay]
+    {{- if hasKey .Values.config "pay_to_relay" }}
+    {{- if hasKey .Values.config.pay_to_relay "enabled" }}
+    # Enable pay to relay
+    enabled = {{ .Values.config.pay_to_relay.enabled }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "processor" }}
+    # Node interface
+    processor = {{ .Values.config.pay_to_relay.processor | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "admission_cost" }}
+    # Admission cost
+    admission_cost = {{ .Values.config.pay_to_relay.admission_cost }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "cost_per_event" }}
+    # Cost per event in sats
+    cost_per_event = {{ .Values.config.pay_to_relay.cost_per_event }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "node_url" }}
+    # Node API URL
+    node_url = {{ .Values.config.pay_to_relay.node_url | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "api_secret" }}
+    # API secret
+    api_secret = {{ .Values.config.pay_to_relay.api_secret | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "rune_path" }}
+    # Path to CLN rune
+    rune_path = {{ .Values.config.pay_to_relay.rune_path | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "direct_message" }}
+    # Send direct message on signup
+    direct_message = {{ .Values.config.pay_to_relay.direct_message }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "terms_message" }}
+    # Terms of service
+    terms_message = {{ .Values.config.pay_to_relay.terms_message | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "sign_ups" }}
+    # Allow new sign ups
+    sign_ups = {{ .Values.config.pay_to_relay.sign_ups }}
+    {{- end }}
+    {{- if hasKey .Values.config.pay_to_relay "secret_key" }}
+    # Secret key
+    secret_key = {{ .Values.config.pay_to_relay.secret_key | quote }}
+    {{- end }}
+    {{- end }}

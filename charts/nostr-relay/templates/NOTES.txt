@@ -1,0 +1,34 @@
+Thank you for installing {{ .Chart.Name }} (version: {{ .Chart.Version }}).
+
+Your Nostr Rs Relay has been deployed and should be available shortly.
+
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "nostr-relay.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "Nostr relay available at ws://$NODE_IP:$NODE_PORT"
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nostr-relay.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "nostr-relay.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "Nostr relay available at ws://$SERVICE_IP:{{ .Values.service.port }}"
+{{- else if contains "ClusterIP" .Values.service.type }}
+  For access within the cluster:
+  echo "Nostr relay available at ws://{{ include "nostr-relay.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}"
+  
+  To access from your local machine, run:
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "nostr-relay.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+  and then connect to ws://localhost:{{ .Values.service.port }}
+{{- end }}
+
+2. View the logs of your relay:
+  kubectl logs -f deployment/{{ include "nostr-relay.fullname" . }} -n {{ .Release.Namespace }}
+
+For more information on configuring the relay, check the config.toml documentation:
+https://github.com/scsibug/nostr-rs-relay
