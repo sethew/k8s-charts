@@ -1,0 +1,175 @@
+# -- Number of nostr-relay replicas
+replicaCount: 1
+
+image:
+  # -- Nostr relay Docker image repository
+  repository: scsibug/nostr-rs-relay
+  # -- Nostr relay Docker image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag. Default is the chart appVersion
+  tag: "latest"
+
+# -- Specify imagePullSecrets if your Docker repository requires authentication
+# @default -- []
+imagePullSecrets: []
+# -- String to partially override nostr-relay.fullname template
+nameOverride: ""
+# -- String to fully override nostr-relay.fullname template
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: false
+  # -- The name of the service account to use
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Annotations to be added to the pod
+# @default -- {}
+podAnnotations: {}
+
+# -- Security context for the pod
+# @default -- {}
+podSecurityContext: {}
+
+# -- Security context for the container
+# @default -- {}
+securityContext: {}
+
+service:
+  # -- Kubernetes Service type
+  type: ClusterIP
+  # -- Kubernetes Service port
+  port: 8080
+
+ingress:
+  # -- Enable ingress resource
+  enabled: false
+  # -- Ingress class name
+  className: ""
+  # -- Additional ingress annotations
+  # @default -- {}
+  annotations: {}
+  # -- List of ingress hosts
+  # @default -- See below
+  hosts:
+    - host: relay.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- Ingress TLS configuration
+  # @default -- []
+  tls: []
+
+# -- Define resource limits and requests for the relay
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+persistence:
+  # -- Enable persistent storage for the database
+  enabled: true
+  # -- Size of the persistent volume
+  size: 10Gi
+  # -- StorageClass name. If empty, uses the default provisioner.
+  storageClass: ""
+  # -- Access mode for the persistent volume
+  accessMode: ReadWriteOnce
+
+# Nostr relay configuration settings
+config:
+  # Database settings
+  database:
+    # -- Directory where the database files will be stored
+    data_directory: "/usr/src/app/db"
+    
+  # Network settings
+  network:
+    # -- Network binding address and port
+    address: "0.0.0.0:8080"
+    # -- Header for finding the client's IP when behind a reverse proxy
+    remote_ip_header: "X-Forwarded-For"
+    # -- Alternative header for client's real IP
+    real_ip_header: "X-Real-IP"
+    # -- Proxy protocol to use (http or https)
+    proxy_protocol: "http"
+    
+  # Options for controlling relay behavior
+  options:
+    # -- Whether to reject events that don't have a valid signature
+    reject_invalid_signatures: true
+    
+    # -- Maximum message size in bytes
+    max_message_length: 128000
+    
+    # -- Reject events that claim to be created too far in the future (seconds)
+    reject_future_seconds: 7200
+    
+    # -- Minimum Proof of Work difficulty to accept (0 for no minimum)
+    min_pow_difficulty: 0
+    
+    # -- Maximum number of subscriptions that a client can create
+    max_subscriptions: 20
+    
+    # -- Maximum number of filters per subscription
+    max_filter_count: 10
+    
+    # -- Maximum limit on events returned per subscription
+    max_limit: 300
+    
+    # -- Minimum prefix length for subscriptions
+    min_prefix_length: 4
+    
+    # -- List of public keys that are not allowed to post to the relay
+    # @default -- []
+    blacklist_pubkey: []
+    
+    # -- IPv4 network addresses that are disallowed from connecting
+    # @default -- []
+    blacklist_address: []
+    
+    # -- Content patterns to be blocked in notes
+    # @default -- []
+    blacklist_content: []
+    
+    # -- Event retention time in days
+    event_retention_time: 90
+    
+    # -- Maximum number of events per minute clients can send
+    message_rate_per_min: 300
+    
+  # Info settings for NIP-11 relay information document
+  info:
+    # -- The public-facing URL of your relay with the websocket schema (wss:// or ws://)
+    relay_url: "wss://your-relay.example.com"
+    # -- Name of your relay
+    name: "Nostr Relay"
+    # -- Description of your relay
+    description: "A nostr-rs-relay instance"
+    # -- Public key of the relay administrator (hexadecimal string)
+    pubkey: ""
+    # -- Administrative contact for the relay
+    contact: ""
+    # -- List of NIPs (Nostr Implementation Possibilities) supported by this relay
+    supported_nips: [1, 2, 4, 9, 11, 12, 15, 16, 20, 22, 28, 33, 40]
+    # -- URL of the relay software repository
+    software: "https://github.com/scsibug/nostr-rs-relay"
+    # -- Version of the relay software
+    version: "0.8.7"
+    
+  # NIP-05 verification configuration
+  nip05:
+    # -- Enable NIP-05 identity verification service
+    enabled: false
+    # -- Domain name for NIP-05 verification
+    domain: "your-domain.com"
+    # -- Map of usernames to public keys
+    # @example
+    # users:
+    #   alice: "pubkey1"
+    #   bob: "pubkey2"
+    users: {}

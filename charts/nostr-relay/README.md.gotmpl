@@ -1,0 +1,119 @@
+# {{ .Name }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+## Introduction
+
+This Helm chart deploys a [nostr-rs-relay](https://github.com/scsibug/nostr-rs-relay) instance on a Kubernetes cluster. The Nostr relay provides a server for the Nostr (Notes and Other Stuff Transmitted by Relays) protocol, a decentralized social network with no central authority.
+
+## Prerequisites
+
+- Kubernetes 1.12+
+- Helm 3.0+
+- PV provisioner support in the underlying infrastructure (if persistence is enabled)
+
+## Installing the Chart
+
+To install the chart with the release name `my-relay`:
+
+```bash
+helm install my-relay ./nostr-relay
+```
+
+## Uninstalling the Chart
+
+To uninstall/delete the `my-relay` deployment:
+
+```bash
+helm delete my-relay
+```
+
+## Configuration
+
+The following table lists the configurable parameters for the nostr-relay chart and their default values.
+
+{{ template "chart.valuesTable" . }}
+
+## Persistence
+
+This chart mounts a Persistent Volume for the database. The volume is created using dynamic volume provisioning. If you want to disable this (and instead use an emptyDir volume), set `persistence.enabled` to `false`.
+
+## Ingress and Reverse Proxy
+
+This chart includes support for Ingress resources. If you have an Ingress controller installed on your cluster, such as [nginx-ingress](https://kubernetes.github.io/ingress-nginx/) or [traefik](https://traefik.io/), you can utilize the ingress controller to serve your Nostr relay.
+
+For proper WebSocket support in an ingress configuration, you may need to add specific annotations. For example, with NGINX:
+
+```yaml
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+  hosts:
+    - host: relay.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: 
+    - secretName: relay-tls
+      hosts:
+        - relay.example.com
+```
+
+## NIP-05 Verification
+
+To enable NIP-05 verification, set `config.nip05.enabled` to `true` and configure your domain and users:
+
+```yaml
+config:
+  nip05:
+    enabled: true
+    domain: "example.com"
+    users:
+      alice: "pubkey1"
+      bob: "pubkey2"
+```
+
+This will allow users to verify their identities using the format `alice@example.com` or `bob@example.com`.
+
+## Using with Kubernetes
+
+Once your relay is deployed, you can access it using the service endpoint. The default configuration creates a ClusterIP service, which means it's only accessible within the cluster.
+
+### Accessing the Relay
+
+1. For internal cluster access:
+   ```
+   ws://RELEASE-NAME-nostr-relay.NAMESPACE.svc.cluster.local:8080
+   ```
+
+2. To access from your local machine:
+   ```bash
+   kubectl port-forward --namespace NAMESPACE svc/RELEASE-NAME-nostr-relay 8080:8080
+   ```
+   Then connect to `ws://localhost:8080`
+
+3. If you enabled Ingress, use the domain you specified.
+
+### Checking Logs
+
+To view the logs of your relay:
+```bash
+kubectl logs -f deployment/RELEASE-NAME-nostr-relay -n NAMESPACE
+```
+
+## Notes on Production Use
+
+For production deployments, consider:
+
+1. Using a specific image tag rather than `latest`
+2. Setting appropriate resource limits and requests
+3. Enabling TLS via Ingress or another method
+4. Setting up proper monitoring and backup strategies for the database
+5. Configuring blacklists and rate limits to protect against abuse
+
+{{ template "helm-docs.versionFooter" . }}

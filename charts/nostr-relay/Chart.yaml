@@ -1,0 +1,28 @@
+apiVersion: v2
+name: nostr-relay
+description: A Helm chart for deploying a Nostr RS Relay
+type: application
+version: 0.1.0
+appVersion: "0.9.0"
+home: https://nostr.com/
+icon: https://user-images.githubusercontent.com/99301796/219900773-d6d02038-e2a0-4334-9f28-c14d40ab6fe7.png
+maintainers:
+  - name: kriegalex
+    email: kriegalex@gmail.com
+keywords:
+  - nostr
+  - relay
+sources:
+  - https://github.com/scsibug/nostr-rs-relay
+  - https://hub.docker.com/r/scsibug/nostr-rs-relay
+  - https://github.com/kriegalex/k8s-charts/tree/main/charts/nostr-relay
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/kriegalex/k8s-charts/tree/main/charts/nostr-relay
+    - name: Docker image source
+      url: https://github.com/scsibug/nostr-rs-relay
+  artifacthub.io/images: |
+    - name: nostr-rs-relay
+      image: scsibug/nostr-rs-relay:0.9.0

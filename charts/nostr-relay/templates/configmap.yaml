@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nostr-relay.fullname" . }}-config
+  labels:
+    {{- include "nostr-relay.labels" . | nindent 4 }}
+data:
+  config.toml: |-
+    # Database settings
+    [database]
+    data_directory = "{{ .Values.config.database.data_directory }}"
+
+    # Network settings
+    [network]
+    address = "{{ .Values.config.network.address }}"
+    remote_ip_header = "{{ .Values.config.network.remote_ip_header }}"
+    real_ip_header = "{{ .Values.config.network.real_ip_header }}"
+    proxy_protocol = "{{ .Values.config.network.proxy_protocol }}"
+
+    # Options
+    [options]
+    reject_invalid_signatures = {{ .Values.config.options.reject_invalid_signatures }}
+    max_message_length = {{ .Values.config.options.max_message_length }}
+    reject_future_seconds = {{ .Values.config.options.reject_future_seconds }}
+    min_pow_difficulty = {{ .Values.config.options.min_pow_difficulty }}
+    max_subscriptions = {{ .Values.config.options.max_subscriptions }}
+    max_filter_count = {{ .Values.config.options.max_filter_count }}
+    max_limit = {{ .Values.config.options.max_limit }}
+    min_prefix_length = {{ .Values.config.options.min_prefix_length }}
+    
+    {{- if .Values.config.options.blacklist_pubkey }}
+    blacklist_pubkey = [
+      {{- range $index, $pubkey := .Values.config.options.blacklist_pubkey }}
+      {{- if $index }}, {{ end }}
+      "{{ $pubkey }}"
+      {{- end }}
+    ]
+    {{- end }}
+    
+    {{- if .Values.config.options.blacklist_address }}
+    blacklist_address = [
+      {{- range $index, $address := .Values.config.options.blacklist_address }}
+      {{- if $index }}, {{ end }}
+      "{{ $address }}"
+      {{- end }}
+    ]
+    {{- end }}
+    
+    {{- if .Values.config.options.blacklist_content }}
+    blacklist_content = [
+      {{- range $index, $content := .Values.config.options.blacklist_content }}
+      {{- if $index }}, {{ end }}
+      "{{ $content }}"
+      {{- end }}
+    ]
+    {{- end }}
+    
+    event_retention_time = {{ .Values.config.options.event_retention_time }}
+    message_rate_per_min = {{ .Values.config.options.message_rate_per_min }}
+
+    # Info (NIP-11)
+    [info]
+    relay_url = "{{ .Values.config.info.relay_url }}"
+    name = "{{ .Values.config.info.name }}"
+    description = "{{ .Values.config.info.description }}"
+    pubkey = "{{ .Values.config.info.pubkey }}"
+    contact = "{{ .Values.config.info.contact }}"
+    supported_nips = [{{ join ", " .Values.config.info.supported_nips }}]
+    software = "{{ .Values.config.info.software }}"
+    version = "{{ .Values.config.info.version }}"
+    
+    {{- if .Values.config.nip05.enabled }}
+    # NIP-05 configuration
+    [nip05]
+    domain = "{{ .Values.config.nip05.domain }}"
+    {{- if .Values.config.nip05.users }}
+    [nip05.users]
+    {{- range $user, $pubkey := .Values.config.nip05.users }}
+    {{ $user }} = "{{ $pubkey }}"
+    {{- end }}
+    {{- end }}
+    {{- end }}
