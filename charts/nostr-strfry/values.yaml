@@ -26,22 +26,22 @@ serviceAccount:
 podAnnotations: {}
 
 # Security context for the pod
-podSecurityContext: {}
+podSecurityContext:
   # # -- Group ID for filesystem access
-  # fsGroup: 1000
+  fsGroup: 1000
   # # -- User ID for the pod
   # runAsUser: 1000
   # # -- Group ID for the pod
   # runAsGroup: 1000
 
 # Security context for the container
-securityContext: {}
-  # # -- User ID to run the container
-  # runAsUser: 1000
-  # # -- Group ID to run the container
-  # runAsGroup: 1000
-  # # -- Run container as non-root user
-  # runAsNonRoot: true
+securityContext:
+  # -- User ID to run the container
+  runAsUser: 1000
+  # -- Group ID to run the container
+  runAsGroup: 1000
+  # -- Run container as non-root user
+  runAsNonRoot: true
 
 # -- Grace period for pod termination in seconds (corresponds to stop_grace_period)
 terminationGracePeriodSeconds: 120
@@ -96,7 +96,7 @@ persistence:
 # Global configuration
 config:
   # -- Directory that contains the strfry LMDB database
-  db: "./strfry-db/"
+  db: "/app/strfry-db"
 
   dbParams:
     # -- Maximum number of threads/processes that can simultaneously have LMDB transactions open
@@ -123,8 +123,8 @@ config:
     maxTagValSize: 1024
 
   relay:
-    # -- Interface to listen on (Use 0.0.0.0 to listen on all interfaces)
-    bind: "127.0.0.1"
+    # -- Interface to listen on (Use 0.0.0.0 for k3s)
+    bind: "0.0.0.0"
     # -- Port to open for the nostr websocket protocol
     port: 7777
     # -- OS-limit on maximum number of open files/sockets (if 0, don't attempt to set)

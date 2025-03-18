@@ -10,24 +10,26 @@ This Helm chart deploys a [strfry](https://github.com/hoytech/strfry) Nostr rela
 
 ## Prerequisites
 
-- Kubernetes 1.12+
-- Helm 3.0+
+- Kubernetes 1.29+
+- Helm 3.16+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 
 ## Installing the Chart
 
-To install the chart with the release name `my-relay`:
+To install the chart with the release name `nostr-strfry`:
 
 ```bash
-helm install my-relay ./nostr-strfry
+helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
+helm repo update
+helm install nostr-strfry k8s-charts/nostr-strfry
 ```
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-relay` deployment:
+To uninstall/delete the `nostr-strfry` deployment:
 
 ```bash
-helm delete my-relay
+helm delete nostr-strfry
 ```
 
 ## Configuration

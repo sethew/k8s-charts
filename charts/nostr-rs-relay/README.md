@@ -10,24 +10,26 @@ This Helm chart deploys a [nostr-rs-relay](https://github.com/scsibug/nostr-rs-r
 
 ## Prerequisites
 
-- Kubernetes 1.12+
-- Helm 3.0+
+- Kubernetes 1.29+
+- Helm 3.16+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 
 ## Installing the Chart
 
-To install the chart with the release name `my-relay`:
+To install the chart with the release name `nostr-rs-relay`:
 
 ```bash
-helm install my-relay ./nostr-relay
+helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
+helm repo update
+helm install nostr-rs-relay k8s-charts/nostr-rs-relay
 ```
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-relay` deployment:
+To uninstall/delete the `nostr-rs-relay` deployment:
 
 ```bash
-helm delete my-relay
+helm delete nostr-rs-relay
 ```
 
 ## Configuration

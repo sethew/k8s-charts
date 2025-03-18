@@ -10,24 +10,26 @@ This Helm chart deploys a [strfry](https://github.com/hoytech/strfry) Nostr rela
 
 ## Prerequisites
 
-- Kubernetes 1.12+
-- Helm 3.0+
+- Kubernetes 1.29+
+- Helm 3.16+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 
 ## Installing the Chart
 
-To install the chart with the release name `my-relay`:
+To install the chart with the release name `nostr-strfry`:
 
 ```bash
-helm install my-relay ./nostr-strfry
+helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
+helm repo update
+helm install nostr-strfry k8s-charts/nostr-strfry
 ```
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-relay` deployment:
+To uninstall/delete the `nostr-strfry` deployment:
 
 ```bash
-helm delete my-relay
+helm delete nostr-strfry
 ```
 
 ## Configuration
@@ -36,7 +38,7 @@ The following table lists the configurable parameters for the nostr-strfry chart
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| config.db | string | `"./strfry-db/"` | Directory that contains the strfry LMDB database |
+| config.db | string | `"/app/strfry-db"` | Directory that contains the strfry LMDB database |
 | config.dbParams.mapsize | string | `"10995116277760"` | Size of mmap() to use when loading LMDB (default is 10TB) |
 | config.dbParams.maxreaders | int | `256` | Maximum number of threads/processes that can simultaneously have LMDB transactions open |
 | config.dbParams.noReadAhead | bool | `false` | Disables read-ahead when accessing the LMDB mapping |
@@ -48,7 +50,7 @@ The following table lists the configurable parameters for the nostr-strfry chart
 | config.events.rejectEventsNewerThanSeconds | int | `900` | Events newer than this (in seconds) will be rejected |
 | config.events.rejectEventsOlderThanSeconds | string | `"94608000"` | Events older than this (in seconds) will be rejected |
 | config.relay.autoPingSeconds | int | `55` | Websocket-level PING message frequency (seconds) |
-| config.relay.bind | string | `"127.0.0.1"` | Interface to listen on (Use 0.0.0.0 to listen on all interfaces) |
+| config.relay.bind | string | `"0.0.0.0"` | Interface to listen on (Use 0.0.0.0 for k3s) |
 | config.relay.compression.enabled | bool | `true` | Enable permessage-deflate compression if supported by client |
 | config.relay.compression.slidingWindow | bool | `true` | Maintain a sliding window buffer for each connection |
 | config.relay.enableTcpKeepalive | bool | `false` | Enable TCP keep-alive to detect dropped connections |
@@ -94,10 +96,12 @@ The following table lists the configurable parameters for the nostr-strfry chart
 | persistence.size | string | `"10Gi"` | Size of the persistent volume |
 | persistence.storageClass | string | `""` | StorageClass name. If empty, uses the default provisioner. |
 | podAnnotations | object | `{}` | Annotations to be added to the pod |
-| podSecurityContext | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `1000` |  |
 | replicaCount | int | `1` | Number of nostr-relay replicas |
 | resources | object | `{}` | Resource limits and requests for the relay |
-| securityContext | object | `{}` |  |
+| securityContext.runAsGroup | int | `1000` | Group ID to run the container |
+| securityContext.runAsNonRoot | bool | `true` | Run container as non-root user |
+| securityContext.runAsUser | int | `1000` | User ID to run the container |
 | service.port | int | `7777` | Kubernetes Service port |
 | service.type | string | `"ClusterIP"` | Kubernetes Service type |
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
