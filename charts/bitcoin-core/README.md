@@ -217,7 +217,8 @@ bitcoind:
 | persistence.enabled | bool | `true` | Enable persistent storage for blockchain data |
 | persistence.existingClaim | string | "" | Use an existing PVC |
 | persistence.size | string | `"500Gi"` | Size of the PVC for blockchain data |
-| persistence.storageClassName | string | "" | Storage class for the blockchain PVC @description -- If defined, storageClassName: <storageClass> If set to "-", storageClassName: "", which disables dynamic provisioning If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner |
+| persistence.storageClass | string | "" | Storage class for the blockchain PVC @description -- If defined, storageClass: <storageClass> If set to "-", storageClass: "", which disables dynamic provisioning If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner |
+| persistence.waitForBind | bool | `true` | Wait for the PVC to be bound before starting the pod @description -- Setting this to false may help in environments where PVs are created on-demand |
 | podAnnotations | object | `{}` | Annotations to add to pods |
 | podDisruptionBudget.enabled | bool | `false` | Enable PDB |
 | podDisruptionBudget.maxUnavailable | string | `nil` | Maximum unavailable pods |

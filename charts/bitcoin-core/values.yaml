@@ -146,12 +146,12 @@ persistence:
   # @default -- ""
   existingClaim: ""
   # -- Storage class for the blockchain PVC
-  # @description -- If defined, storageClassName: <storageClass>
-  # If set to "-", storageClassName: "", which disables dynamic provisioning
+  # @description -- If defined, storageClass: <storageClass>
+  # If set to "-", storageClass: "", which disables dynamic provisioning
   # If undefined (the default) or set to null, no storageClassName spec is
   # set, choosing the default provisioner
   # @default -- ""
-  storageClassName: ""
+  storageClass: ""
   # -- Access modes for the PVC
   accessModes:
     - ReadWriteOnce
@@ -160,6 +160,9 @@ persistence:
   # -- Annotations for the PVC
   # @default -- {}
   annotations: {}
+  # -- Wait for the PVC to be bound before starting the pod
+  # @description -- Setting this to false may help in environments where PVs are created on-demand
+  waitForBind: true
 
 # Service configuration
 service:
