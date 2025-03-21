@@ -7,19 +7,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.p2pPort }}
-      targetPort: p2p
+    - port: {{ .Values.bitcoind.rpc.port }}
+      targetPort: tcp-p2p
       protocol: TCP
-      name: p2p
-    - port: {{ .Values.service.rpcPort }}
-      targetPort: rpc
+      name: tcp-p2p
+    - port: {{ .Values.bitcoind.rpc.rpcPort }}
+      targetPort: http-rpc
       protocol: TCP
-      name: rpc
-    {{- if .Values.bitcoind.zmq.enabled }}
-    - port: {{ .Values.service.zmqPort }}
-      targetPort: zmq
-      protocol: TCP
-      name: zmq
-    {{- end }}
+      name: http-rpc
   selector:
     {{- include "bitcoind.selectorLabels" . | nindent 4 }}

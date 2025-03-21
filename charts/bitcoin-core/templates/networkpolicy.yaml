@@ -14,7 +14,7 @@ spec:
   ingress:
     # P2P port
     - ports:
-        - port: {{ .Values.service.p2pPort }}
+        - port: {{ .Values.bitcoind.rpc.port }}
           protocol: TCP
       {{- if .Values.networkPolicy.p2pAllowFrom }}
       from:
@@ -23,21 +23,10 @@ spec:
     
     # RPC port
     - ports:
-        - port: {{ .Values.bitcoind.rpc.port }}
+        - port: {{ .Values.bitcoind.rpc.rpcPort }}
           protocol: TCP
       {{- if .Values.networkPolicy.rpcAllowFrom }}
       from:
         {{- toYaml .Values.networkPolicy.rpcAllowFrom | nindent 8 }}
       {{- end }}
-    
-    # ZMQ port
-    {{- if .Values.bitcoind.zmq.enabled }}
-    - ports:
-        - port: {{ .Values.service.zmqPort }}
-          protocol: TCP
-      {{- if .Values.networkPolicy.zmqAllowFrom }}
-      from:
-        {{- toYaml .Values.networkPolicy.zmqAllowFrom | nindent 8 }}
-      {{- end }}
-    {{- end }}
 {{- end }}

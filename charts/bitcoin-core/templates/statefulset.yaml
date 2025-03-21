@@ -26,9 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "bitcoind.serviceAccountName" . }}
+      {{- if .Values.podSecurityContext.enabled }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      
+      {{- end }}
+
       {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints:
         {{- toYaml .Values.topologySpreadConstraints | nindent 8 }}
@@ -36,10 +38,31 @@ spec:
       
       containers:
         - name: {{ .Chart.Name }}
+          {{- if .Values.securityContext.enabled }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{ toYaml .Values.diagnosticMode.command | nindent 12 }}
+          args: {{ toYaml .Values.diagnosticMode.args | nindent 12 }}
+          {{- else }}
+          command:
+            - bitcoind
+          args:
+            - -conf={{ .Values.bitcoind.configFile }}
+            - -datadir={{ .Values.bitcoind.dataDir }}
+            - -rpcuser="$RPC_USERNAME" 
+            - -rpcpassword="$RPC_PASSWORD"
+            - -rpcport={{ .Values.bitcoind.rpc.rpcPort }}
+            - -port={{ .Values.bitcoind.rpc.port }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "bitcoind.fullname" . }}-auth
+            - configMapRef:
+                name: {{ include "bitcoind.fullname" . }}-config
           # Add lifecycle hook for graceful shutdown
           lifecycle:
             preStop:
@@ -48,49 +71,18 @@ spec:
                   - "/bin/sh"
                   - "-c"
                   - "bitcoin-cli -rpcuser=${BTC_RPCUSER} -rpcpassword=${BTC_RPCPASSWORD} stop && sleep 30"
-          envFrom:
-            - secretRef:
-                name: {{ include "bitcoind.fullname" . }}-auth
-            - configMapRef:
-                name: {{ include "bitcoind.fullname" . }}-config
-          {{- if not .Values.bitcoind.customConfig }}
-          env:
-            - name: BTC_RPCUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "bitcoind.fullname" . }}
-                  key: rpcuser
-            - name: BTC_RPCPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "bitcoind.fullname" . }}
-                  key: rpcpassword
-          {{- end }}
           ports:
             - name: tcp-p2p
-              containerPort: 8333
-              protocol: TCP
-            - name: http-rpc
               containerPort: {{ .Values.bitcoind.rpc.port }}
               protocol: TCP
-            {{- if .Values.bitcoind.zmq.enabled }}
-            - name: zmq
-              containerPort: 28333
+            - name: http-rpc
+              containerPort: {{ .Values.bitcoind.rpc.rpcPort }}
               protocol: TCP
-            {{- end }}
           {{- if .Values.probes.startup.enabled }}
           startupProbe:
-            {{- if eq .Values.probes.startup.type "httpGet" }}
             httpGet:
-              path: {{ .Values.probes.startup.path }}
+              path: /v2/info
               port: http-rpc
-            {{- else if eq .Values.probes.startup.type "tcpSocket" }}
-            tcpSocket:
-              port: http-rpc
-            {{- else if eq .Values.probes.startup.type "exec" }}
-            exec:
-              command: {{ .Values.probes.startup.command }}
-            {{- end }}
             initialDelaySeconds: {{ .Values.probes.startup.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.startup.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.startup.timeoutSeconds }}
@@ -98,17 +90,9 @@ spec:
           {{- end }}
           {{- if .Values.probes.liveness.enabled }}
           livenessProbe:
-            {{- if eq .Values.probes.liveness.type "httpGet" }}
             httpGet:
-              path: {{ .Values.probes.liveness.path }}
+              path: /v2/info
               port: http-rpc
-            {{- else if eq .Values.probes.liveness.type "tcpSocket" }}
-            tcpSocket:
-              port: http-rpc
-            {{- else if eq .Values.probes.liveness.type "exec" }}
-            exec:
-              command: {{ .Values.probes.liveness.command }}
-            {{- end }}
             initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
@@ -116,17 +100,9 @@ spec:
           {{- end }}
           {{- if .Values.probes.readiness.enabled }}
           readinessProbe:
-            {{- if eq .Values.probes.readiness.type "httpGet" }}
             httpGet:
-              path: {{ .Values.probes.readiness.path }}
+              path: /v2/info
               port: http-rpc
-            {{- else if eq .Values.probes.readiness.type "tcpSocket" }}
-            tcpSocket:
-              port: http-rpc
-            {{- else if eq .Values.probes.readiness.type "exec" }}
-            exec:
-              command: {{ .Values.probes.readiness.command }}
-            {{- end }}
             initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
@@ -137,10 +113,10 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
-              mountPath: {{ .Values.paths.dataDir }}
+              mountPath: {{ .Values.bitcoind.dataDir }}
             {{- if .Values.bitcoind.customConfig }}
             - name: config
-              mountPath: {{ .Values.paths.configFile }}
+              mountPath: {{ .Values.bitcoind.configFile }}
               subPath: bitcoin.conf
             {{- end }}
         {{- if .Values.metrics.enabled }}
@@ -148,21 +124,13 @@ spec:
           image: "{{ .Values.metrics.image }}"
           imagePullPolicy: {{ .Values.metrics.pullPolicy }}
           args:
-            - "--bitcoind.addr=http://localhost:{{ .Values.bitcoind.rpc.port }}"
-            - "--bitcoind.user=$(BTC_RPCUSER)"
-            - "--bitcoind.pass=$(BTC_RPCPASSWORD)"
+            - "--bitcoind.addr=http://localhost:{{ .Values.bitcoind.rpc.rpcPort }}"
+            - "--bitcoind.user=$(RPC_USERNAME)"
+            - "--bitcoind.pass=$(RPC_PASSWORD)"
             - "--web.listen-address=:{{ .Values.metrics.port }}"
-          env:
-            - name: BTC_RPCUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "bitcoind.fullname" . }}-auth
-                  key: rpcuser
-            - name: BTC_RPCPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "bitcoind.fullname" . }}-auth
-                  key: rpcpassword
+          envFrom:
+            - secretRef:
+                name: {{ include "bitcoind.fullname" . }}-auth
           ports:
             - name: metrics
               containerPort: {{ .Values.metrics.port }}
@@ -196,16 +164,19 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if and .Values.persistence.enabled .Values.persistence.waitForBind }}
+      {{- if and .Values.persistence.enabled .Values.volumePermissions.enabled }}
       initContainers:
         - name: volume-permissions
-          image: busybox
-          command: ["sh", "-c", "chmod -R 777 {{ .Values.paths.dataDir }}"]
+          image: {{ .Values.volumePermissions.image | default "busybox" }}
+          imagePullPolicy: {{ .Values.volumePermissions.pullPolicy | default "IfNotPresent" }}
+          command: ["sh", "-c", "chmod -R 777 {{ .Values.bitcoind.dataDir }}"]
           volumeMounts:
             - name: data
-              mountPath: {{ .Values.paths.dataDir }}
+              mountPath: {{ .Values.bitcoind.dataDir }}
+          {{- if .Values.volumePermissions.enabled }}
           securityContext:
-            runAsUser: 0
+            {{- toYaml .Values.volumePermissions.securityContext | nindent 12 }}
+          {{- end }}
       {{- end }}
   {{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
@@ -218,7 +189,13 @@ spec:
       spec:
         accessModes:
           {{- toYaml .Values.persistence.accessModes | nindent 10 }}
-        storageClassName: {{ .Values.persistence.storageClass | default "" | quote }}
+        {{- if .Values.persistence.storageClass }}
+        {{- if eq "-" .Values.persistence.storageClass }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        {{- end }}
+        {{- end }}
         resources:
           requests:
             storage: {{ .Values.persistence.size | quote }}

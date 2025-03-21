@@ -69,7 +69,7 @@ kubectl exec -it sts/bitcoin-core-0 -- bitcoin-cli -rpcuser=YOUR_RPC_USER -rpcpa
 To retrieve the auto-generated RPC password (if not manually set):
 
 ```bash
-kubectl get secret bitcoin-core-auth -o jsonpath="{.data.BTC_RPCPASSWORD}" | base64 --decode
+kubectl get secret bitcoin-core-auth -o jsonpath="{.data.RPC_PASSWORD}" | base64 --decode
 ```
 
 ### Port Forwarding
@@ -87,14 +87,14 @@ kubectl port-forward sts/bitcoin-core-0 8333:8333
 ## Storage Considerations
 
 Bitcoin Core requires significant storage for the full blockchain:
-- Bitcoin Mainnet: 500+ GB (and growing)
-- Bitcoin Testnet: 40+ GB (and growing)
+- Bitcoin Mainnet: 700+ GB (and growing)
+- Bitcoin Testnet: 50+ GB (and growing)
 
 Ensure your persistent volume has adequate capacity. The StatefulSet uses volumeClaimTemplates to provision storage:
 
 ```yaml
 persistence:
-  size: 500Gi  # Adjust according to your needs
+  size: 700Gi  # Adjust according to your needs
 ```
 
 ## Advanced Configuration

@@ -69,7 +69,7 @@ kubectl exec -it sts/bitcoin-core-0 -- bitcoin-cli -rpcuser=YOUR_RPC_USER -rpcpa
 To retrieve the auto-generated RPC password (if not manually set):
 
 ```bash
-kubectl get secret bitcoin-core-auth -o jsonpath="{.data.BTC_RPCPASSWORD}" | base64 --decode
+kubectl get secret bitcoin-core-auth -o jsonpath="{.data.RPC_PASSWORD}" | base64 --decode
 ```
 
 ### Port Forwarding
@@ -87,14 +87,14 @@ kubectl port-forward sts/bitcoin-core-0 8333:8333
 ## Storage Considerations
 
 Bitcoin Core requires significant storage for the full blockchain:
-- Bitcoin Mainnet: 500+ GB (and growing)
-- Bitcoin Testnet: 40+ GB (and growing)
+- Bitcoin Mainnet: 700+ GB (and growing)
+- Bitcoin Testnet: 50+ GB (and growing)
 
 Ensure your persistent volume has adequate capacity. The StatefulSet uses volumeClaimTemplates to provision storage:
 
 ```yaml
 persistence:
-  size: 500Gi  # Adjust according to your needs
+  size: 700Gi  # Adjust according to your needs
 ```
 
 ## Advanced Configuration
@@ -166,32 +166,18 @@ bitcoind:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | {} | Affinity for pod assignment |
-| bitcoind.blockfilterIndex | bool | `false` | Enable compact block filter index (BIP158) |
-| bitcoind.coinstatsIndex | bool | `false` | Enable coinstats index |
-| bitcoind.customConfig | string | "" | Custom bitcoin.conf file content @description -- If provided, this will be mounted as a configuration file. Note: This takes precedence over individual settings when both are provided. |
-| bitcoind.dbCache | int | `0` | Size of database cache in MB @description -- 0 means use default value |
-| bitcoind.disableWallet | bool | `true` | Disable the wallet functionality |
-| bitcoind.extraConfig | object | `{}` | Additional custom parameters for bitcoin.conf @example extraConfig:   blockfilterindex: 1   peerblockfilters: 1 |
-| bitcoind.prunesize | int | `550` | Prune target size in MiB (only used when pruning is enabled) Must be at least 550 MiB |
-| bitcoind.pruning | bool | `false` | Enable blockchain pruning to reduce disk usage |
-| bitcoind.regtest | bool | `false` | Enable regtest mode (local testing) |
-| bitcoind.rpc.allowip | string | `"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.1,::1"` | IP addresses allowed to connect to RPC (IPv4, IPv6 or CIDR notation) Default restricts to pod networks and localhost |
-| bitcoind.rpc.bind | string | `"0.0.0.0"` | IP address for RPC interface to bind to Use 0.0.0.0 to allow connections from any source within the cluster |
-| bitcoind.rpc.clienttimeout | int | `30` | How many seconds to wait for a response from a given call before timing out |
+| bitcoind.config | string | "" | bitcoin.conf file content @description -- If provided, this will be mounted as a configuration file. The user and password come from the secret and are passed directly to the command. |
+| bitcoind.configFile | string | `"/root/.bitcoin/bitcoin.conf"` | Path where bitcoin.conf should be mounted when using custom config Replaces conf in the configuration file |
+| bitcoind.dataDir | string | `"/root/.bitcoin"` | Directory where Bitcoin Core stores blockchain data Replaces datadir in the configuration file |
+| bitcoind.regtest | int | `0` | Enable regtest mode (local testing) |
 | bitcoind.rpc.password | string | "" | Password for RPC authentication @description -- If not provided, a random password will be generated |
-| bitcoind.rpc.port | int | `8332` | Port for RPC interface |
+| bitcoind.rpc.port | int | `8333` | Port for P2P connections |
+| bitcoind.rpc.rpcPort | int | `8332` | Port for RPC interface |
 | bitcoind.rpc.user | string | `"btc"` | Username for RPC authentication |
-| bitcoind.sync.assumevalid | string | "" | Assume this block hash as valid (reduces initial block download time) |
-| bitcoind.sync.maxconnections | int | `125` | Maximum number of connections to other nodes (network dependent) |
-| bitcoind.sync.maxinboundconnections | int | `125` | Maximum number of inbound connections (network dependent) |
-| bitcoind.sync.parallelblocks | int | `8` | Number of blocks to download in parallel during synchronization (1-16) |
-| bitcoind.testnet | bool | `false` | Enable testnet instead of mainnet |
-| bitcoind.txIndex | bool | `false` | Maintain a full transaction index |
-| bitcoind.zmq.enabled | bool | `false` | Enable ZMQ notifications |
-| bitcoind.zmq.hashBlock | string | `"tcp://0.0.0.0:28333"` | ZMQ notification endpoint for block hash notifications |
-| bitcoind.zmq.hashTx | string | `"tcp://0.0.0.0:28333"` | ZMQ notification endpoint for transaction hash notifications |
-| bitcoind.zmq.rawBlock | string | `"tcp://0.0.0.0:28333"` | ZMQ notification endpoint for raw block notifications |
-| bitcoind.zmq.rawTx | string | `"tcp://0.0.0.0:28333"` | ZMQ notification endpoint for raw transaction notifications |
+| bitcoind.testnet | int | `0` | Enable testnet instead of mainnet |
+| diagnosticMode.args[0] | string | `"infinity"` |  |
+| diagnosticMode.command[0] | string | `"sleep"` |  |
+| diagnosticMode.enabled | bool | `false` |  |
 | fullnameOverride | string | `""` | String to fully override bitcoin-core.fullname template |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"blockstream/bitcoind"` | Docker repository for Bitcoin Core image |
@@ -208,55 +194,43 @@ bitcoind:
 | networkPolicy.enabled | bool | `false` | Enable network policy for Bitcoin Core |
 | networkPolicy.p2pAllowFrom | list | [] | Define which pods can access the Bitcoin P2P interface Leave empty to allow all pods to connect to P2P network |
 | networkPolicy.rpcAllowFrom | list | [] | Define which pods can access the Bitcoin RPC interface |
-| networkPolicy.zmqAllowFrom | list | [] | Define which pods can access the ZMQ interface |
 | nodeSelector | object | {} | Node selector for pod assignment |
-| paths.configFile | string | `"/bitcoin.conf"` | Path where bitcoin.conf should be mounted when using custom config |
-| paths.dataDir | string | `"/bitcoin/data"` | Directory where Bitcoin Core stores blockchain data |
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
 | persistence.annotations | object | {} | Annotations for the PVC |
 | persistence.enabled | bool | `true` | Enable persistent storage for blockchain data |
 | persistence.existingClaim | string | "" | Use an existing PVC |
-| persistence.size | string | `"500Gi"` | Size of the PVC for blockchain data |
+| persistence.size | string | `"700Gi"` | Size of the PVC for blockchain data |
 | persistence.storageClass | string | "" | Storage class for the blockchain PVC @description -- If defined, storageClass: <storageClass> If set to "-", storageClass: "", which disables dynamic provisioning If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner |
-| persistence.waitForBind | bool | `true` | Wait for the PVC to be bound before starting the pod @description -- Setting this to false may help in environments where PVs are created on-demand |
 | podAnnotations | object | `{}` | Annotations to add to pods |
 | podDisruptionBudget.enabled | bool | `false` | Enable PDB |
 | podDisruptionBudget.maxUnavailable | string | `nil` | Maximum unavailable pods |
 | podDisruptionBudget.minAvailable | int | `1` | Minimum available pods |
-| podSecurityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | Security context for the pod |
-| probes.liveness.command | list | `["/bin/sh","-c","bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"]` | Command for exec probe (only used when type is exec) |
-| probes.liveness.enabled | bool | `true` | Enable liveness probe |
+| podSecurityContext | object | `{"enabled":false,"fsGroup":1000}` | Security context for the pod |
+| probes.liveness.enabled | bool | `false` | Enable liveness probe |
 | probes.liveness.failureThreshold | int | `3` | Failure threshold |
 | probes.liveness.initialDelaySeconds | int | `60` | Initial delay seconds |
-| probes.liveness.path | string | `"/v2/info"` | Path for HTTP GET requests (only used when type is httpGet) |
 | probes.liveness.periodSeconds | int | `30` | Period seconds |
 | probes.liveness.timeoutSeconds | int | `5` | Timeout seconds |
-| probes.liveness.type | string | `"tcpSocket"` | Probe type: httpGet, tcpSocket, or exec |
-| probes.readiness.command | list | `["/bin/sh","-c","bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"]` | Command for exec probe (only used when type is exec) |
-| probes.readiness.enabled | bool | `true` | Enable readiness probe |
+| probes.readiness.enabled | bool | `false` | Enable readiness probe |
 | probes.readiness.failureThreshold | int | `3` | Failure threshold |
 | probes.readiness.initialDelaySeconds | int | `30` | Initial delay seconds |
-| probes.readiness.path | string | `"/v2/info"` | Path for HTTP GET requests (only used when type is httpGet) |
 | probes.readiness.periodSeconds | int | `10` | Period seconds |
 | probes.readiness.successThreshold | int | `1` | Success threshold |
 | probes.readiness.timeoutSeconds | int | `5` | Timeout seconds |
-| probes.readiness.type | string | `"tcpSocket"` | Probe type: httpGet, tcpSocket, or exec |
-| probes.startup.command | list | `["/bin/sh","-c","bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"]` | Command for exec probe (only used when type is exec) |
-| probes.startup.enabled | bool | `true` | Enable startup probe |
+| probes.startup.enabled | bool | `false` | Enable startup probe |
 | probes.startup.failureThreshold | int | `30` | Failure threshold |
 | probes.startup.initialDelaySeconds | int | `30` | Initial delay seconds |
-| probes.startup.path | string | `"/v2/info"` | Path for HTTP GET requests (only used when type is httpGet) |
 | probes.startup.periodSeconds | int | `10` | Period seconds |
 | probes.startup.timeoutSeconds | int | `5` | Timeout seconds |
-| probes.startup.type | string | `"tcpSocket"` | Probe type: httpGet, tcpSocket, or exec |
-| resources | object | `{"limits":{"cpu":4,"memory":"8Gi"},"requests":{"cpu":1,"memory":"2Gi"}}` | Resource requests and limits |
-| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security context for the container |
-| service.p2pPort | int | `8333` | Port for P2P connections |
-| service.rpcPort | int | `8332` | Port for RPC interface |
+| resources | object | `{}` | Resource requests and limits |
+| securityContext | object | `{"enabled":false,"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":1000}` | Security context for the container |
 | service.type | string | `"ClusterIP"` | Service type |
-| service.zmqPort | int | `28333` | Port for ZMQ notifications |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | "" | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | [] | Tolerations for pod assignment |
 | topologySpreadConstraints | list | `[]` | Topology spread constraints for pod distribution |
+| volumePermissions.enabled | bool | `false` | Enable an init container to set volume permissions |
+| volumePermissions.image | string | `"busybox"` | Image to use for volume permissions init container |
+| volumePermissions.pullPolicy | string | `"IfNotPresent"` | Image pull policy for init container |
+| volumePermissions.securityContext | object | `{"enabled":true,"runAsUser":0}` | Security context for volume permissions init container |
