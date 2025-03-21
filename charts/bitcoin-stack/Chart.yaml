@@ -1,6 +1,6 @@
 apiVersion: v2
-name: bitcoin-core
-description: A Helm chart for deploying Bitcoin Core nodes
+name: bitcoin-stack
+description: "A Helm chart for deploying a full Bitcoin stack: bitcoind, and more to come."
 type: application
 version: 1.0.0
 appVersion: "27.2"
