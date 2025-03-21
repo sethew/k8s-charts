@@ -60,13 +60,13 @@ bitcoind:
   testnet: false
   # -- Enable regtest mode (local testing)
   regtest: false
-  
+
   # -- Custom bitcoin.conf file content
   # @description -- If provided, this will be mounted as a configuration file.
   # Note: This takes precedence over individual settings when both are provided.
   # @default -- ""
   customConfig: ""
-  
+
   # RPC settings
   rpc:
     # -- Username for RPC authentication
@@ -85,7 +85,7 @@ bitcoind:
     allowip: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.1,::1"
     # -- How many seconds to wait for a response from a given call before timing out
     clienttimeout: 30
-  
+
   # Bitcoin node specific settings
   # -- Disable the wallet functionality
   disableWallet: true
@@ -98,7 +98,7 @@ bitcoind:
   # -- Size of database cache in MB
   # @description -- 0 means use default value
   dbCache: 0
-  
+
   # Blockchain sync settings
   sync:
     # -- Assume this block hash as valid (reduces initial block download time)
@@ -110,14 +110,14 @@ bitcoind:
     maxconnections: 125
     # -- Maximum number of inbound connections (network dependent)
     maxinboundconnections: 125
-    
+
   # Storage optimization
   # -- Enable blockchain pruning to reduce disk usage
   pruning: false
   # -- Prune target size in MiB (only used when pruning is enabled)
   # Must be at least 550 MiB
   prunesize: 550
-  
+
   # ZMQ settings
   zmq:
     # -- Enable ZMQ notifications
@@ -130,7 +130,7 @@ bitcoind:
     rawTx: "tcp://0.0.0.0:28333"
     # -- ZMQ notification endpoint for raw block notifications
     rawBlock: "tcp://0.0.0.0:28333"
-  
+
   # -- Additional custom parameters for bitcoin.conf
   # @example
   # extraConfig:
@@ -204,7 +204,7 @@ probes:
     # -- Path for HTTP GET requests (only used when type is httpGet)
     path: "/v2/info"
     # -- Command for exec probe (only used when type is exec)
-    command: 
+    command:
       - "/bin/sh"
       - "-c"
       - "bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"
@@ -216,7 +216,7 @@ probes:
     timeoutSeconds: 5
     # -- Failure threshold
     failureThreshold: 30
-  
+
   # Configure liveness probe
   liveness:
     # -- Enable liveness probe
@@ -226,7 +226,7 @@ probes:
     # -- Path for HTTP GET requests (only used when type is httpGet)
     path: "/v2/info"
     # -- Command for exec probe (only used when type is exec)
-    command: 
+    command:
       - "/bin/sh"
       - "-c"
       - "bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"
@@ -238,7 +238,7 @@ probes:
     timeoutSeconds: 5
     # -- Failure threshold
     failureThreshold: 3
-  
+
   # Configure readiness probe
   readiness:
     # -- Enable readiness probe
@@ -248,7 +248,7 @@ probes:
     # -- Path for HTTP GET requests (only used when type is httpGet)
     path: "/v2/info"
     # -- Command for exec probe (only used when type is exec)
-    command: 
+    command:
       - "/bin/sh"
       - "-c"
       - "bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"
