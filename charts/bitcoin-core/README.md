@@ -183,6 +183,11 @@ bitcoind:
 | image.repository | string | `"blockstream/bitcoind"` | Docker repository for Bitcoin Core image |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
 | imagePullSecrets | list | `[]` | Image pull secrets for private Docker registry |
+| ingress.annotations | object | {} | Ingress annotations |
+| ingress.className | string | "" | Ingress class name |
+| ingress.enabled | bool | `false` | Enable ingress for Bitcoin Core RPC |
+| ingress.hosts | list | [{ host: bitcoin-rpc.local }] | Ingress hosts configuration |
+| ingress.tls | list | [] | Ingress TLS configuration |
 | metrics.enabled | bool | `false` | Enable Prometheus metrics exporter sidecar |
 | metrics.image | string | `"prometheuscommunity/bitcoin-exporter:latest"` | Container image for metrics |
 | metrics.port | int | `9332` | Metrics container port |
@@ -191,7 +196,10 @@ bitcoind:
 | metrics.serviceAnnotations | object | `{"prometheus.io/port":"9332","prometheus.io/scrape":"true"}` | Metrics service annotations |
 | metrics.servicePort | int | `9332` | Metrics service port |
 | nameOverride | string | `""` | String to partially override bitcoin-core.fullname template |
+| networkPolicy.allowIngressController | bool | `false` | Allow Ingress controller to connect to Bitcoin RPC when using Ingress |
 | networkPolicy.enabled | bool | `false` | Enable network policy for Bitcoin Core |
+| networkPolicy.ingressControllerNamespaceLabel | string | `"kubernetes.io/metadata.name"` | Label key used to identify the Ingress controller namespace |
+| networkPolicy.ingressControllerNamespaceLabelValue | string | `"ingress-nginx"` | Label value used to identify the Ingress controller namespace |
 | networkPolicy.p2pAllowFrom | list | [] | Define which pods can access the Bitcoin P2P interface Leave empty to allow all pods to connect to P2P network |
 | networkPolicy.rpcAllowFrom | list | [] | Define which pods can access the Bitcoin RPC interface |
 | nodeSelector | object | {} | Node selector for pod assignment |
@@ -205,7 +213,8 @@ bitcoind:
 | podDisruptionBudget.enabled | bool | `false` | Enable PDB |
 | podDisruptionBudget.maxUnavailable | string | `nil` | Maximum unavailable pods |
 | podDisruptionBudget.minAvailable | int | `1` | Minimum available pods |
-| podSecurityContext | object | `{"enabled":false,"fsGroup":1000}` | Security context for the pod |
+| podSecurityContext.enabled | bool | `false` | Enable pod security context |
+| podSecurityContext.fsGroup | int | `1000` | Group ID to run the pod |
 | probes.liveness.enabled | bool | `false` | Enable liveness probe |
 | probes.liveness.failureThreshold | int | `3` | Failure threshold |
 | probes.liveness.initialDelaySeconds | int | `60` | Initial delay seconds |
@@ -223,7 +232,10 @@ bitcoind:
 | probes.startup.periodSeconds | int | `10` | Period seconds |
 | probes.startup.timeoutSeconds | int | `5` | Timeout seconds |
 | resources | object | `{}` | Resource requests and limits |
-| securityContext | object | `{"enabled":false,"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":1000}` | Security context for the container |
+| securityContext.enabled | bool | `false` | Enable security context |
+| securityContext.readOnlyRootFilesystem | bool | `false` | Allow write access to root filesystem |
+| securityContext.runAsNonRoot | bool | `true` | Ensures container is not run as root |
+| securityContext.runAsUser | int | `1000` | User ID to run the container |
 | service.type | string | `"ClusterIP"` | Service type |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |

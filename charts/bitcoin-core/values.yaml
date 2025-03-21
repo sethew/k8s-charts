@@ -44,16 +44,22 @@ serviceAccount:
 # -- Annotations to add to pods
 podAnnotations: {}
 
-# -- Security context for the pod
+# Security context for the pod
 podSecurityContext:
+  # -- Enable pod security context
   enabled: false
+  # -- Group ID to run the pod
   fsGroup: 1000
 
-# -- Security context for the container
+# Security context for the container
 securityContext:
+  # -- Enable security context
   enabled: false
+  # -- Ensures container is not run as root
   runAsNonRoot: true
+  # -- User ID to run the container
   runAsUser: 1000
+  # -- Allow write access to root filesystem
   readOnlyRootFilesystem: false
 
 # Volume permissions initialization
@@ -169,6 +175,32 @@ tolerations: []
 # @default -- {}
 affinity: {}
 
+# Ingress configuration
+ingress:
+  # -- Enable ingress for Bitcoin Core RPC
+  enabled: false
+  # -- Ingress class name
+  # @default -- ""
+  className: ""
+  # -- Ingress annotations
+  # @default -- {}
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  # -- Ingress hosts configuration
+  # @default -- [{ host: bitcoin-rpc.local }]
+  hosts:
+    - host: bitcoin-rpc.local
+      paths:
+        - path: /
+          pathType: Prefix
+  # -- Ingress TLS configuration
+  # @default -- []
+  tls: []
+  #  - secretName: bitcoin-tls-secret
+  #    hosts:
+  #      - bitcoin-rpc.local
+
 # Pod probe configuration
 probes:
   # Configure startup probe
@@ -248,6 +280,12 @@ networkPolicy:
   # Leave empty to allow all pods to connect to P2P network
   # @default -- []
   p2pAllowFrom: []
+  # -- Allow Ingress controller to connect to Bitcoin RPC when using Ingress
+  allowIngressController: false
+  # -- Label key used to identify the Ingress controller namespace
+  ingressControllerNamespaceLabel: "kubernetes.io/metadata.name"
+  # -- Label value used to identify the Ingress controller namespace
+  ingressControllerNamespaceLabelValue: "ingress-nginx"
 
 # Pod Disruption Budget for high availability
 podDisruptionBudget:

@@ -114,11 +114,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: {{ .Values.bitcoind.dataDir }}
-            {{- if .Values.bitcoind.customConfig }}
             - name: config
               mountPath: {{ .Values.bitcoind.configFile }}
               subPath: bitcoin.conf
-            {{- end }}
         {{- if .Values.metrics.enabled }}
         - name: metrics
           image: "{{ .Values.metrics.image }}"
@@ -139,11 +137,9 @@ spec:
             {{- toYaml .Values.metrics.resources | nindent 12 }}
         {{- end }}
       volumes:
-        {{- if .Values.bitcoind.customConfig }}
         - name: config
           configMap:
             name: {{ include "bitcoind.fullname" . }}-config
-        {{- end }}
         {{- if not .Values.persistence.enabled }}
         - name: data
           emptyDir: {}
