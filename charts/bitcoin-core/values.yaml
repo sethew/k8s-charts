@@ -1,0 +1,322 @@
+# -- Default values for Bitcoin Core.
+# This is a YAML-formatted file.
+
+image:
+  # -- Docker repository for Bitcoin Core image
+  repository: blockstream/bitcoind
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# -- Image pull secrets for private Docker registry
+imagePullSecrets: []
+# -- String to partially override bitcoin-core.fullname template
+nameOverride: ""
+# -- String to fully override bitcoin-core.fullname template
+fullnameOverride: ""
+
+# Container filesystem paths (modify these if using a different Bitcoin Core image)
+paths:
+  # -- Directory where Bitcoin Core stores blockchain data
+  dataDir: "/bitcoin/data"
+  # -- Path where bitcoin.conf should be mounted when using custom config
+  configFile: "/bitcoin.conf"
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  # @default -- ""
+  name: ""
+
+# -- Annotations to add to pods
+podAnnotations: {}
+
+# -- Security context for the pod
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+# -- Security context for the container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  privileged: false
+  seccompProfile:
+    type: RuntimeDefault
+
+# Bitcoin Core configuration
+bitcoind:
+  # -- Enable testnet instead of mainnet
+  testnet: false
+  # -- Enable regtest mode (local testing)
+  regtest: false
+  
+  # -- Custom bitcoin.conf file content
+  # @description -- If provided, this will be mounted as a configuration file.
+  # Note: This takes precedence over individual settings when both are provided.
+  # @default -- ""
+  customConfig: ""
+  
+  # RPC settings
+  rpc:
+    # -- Username for RPC authentication
+    user: "btc"
+    # -- Password for RPC authentication
+    # @description -- If not provided, a random password will be generated
+    # @default -- ""
+    password: ""
+    # -- Port for RPC interface
+    port: 8332
+    # -- IP address for RPC interface to bind to
+    # Use 0.0.0.0 to allow connections from any source within the cluster
+    bind: "0.0.0.0"
+    # -- IP addresses allowed to connect to RPC (IPv4, IPv6 or CIDR notation)
+    # Default restricts to pod networks and localhost
+    allowip: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.1,::1"
+    # -- How many seconds to wait for a response from a given call before timing out
+    clienttimeout: 30
+  
+  # Bitcoin node specific settings
+  # -- Disable the wallet functionality
+  disableWallet: true
+  # -- Maintain a full transaction index
+  txIndex: false
+  # -- Enable compact block filter index (BIP158)
+  blockfilterIndex: false
+  # -- Enable coinstats index
+  coinstatsIndex: false
+  # -- Size of database cache in MB
+  # @description -- 0 means use default value
+  dbCache: 0
+  
+  # Blockchain sync settings
+  sync:
+    # -- Assume this block hash as valid (reduces initial block download time)
+    # @default -- ""
+    assumevalid: ""
+    # -- Number of blocks to download in parallel during synchronization (1-16)
+    parallelblocks: 8
+    # -- Maximum number of connections to other nodes (network dependent)
+    maxconnections: 125
+    # -- Maximum number of inbound connections (network dependent)
+    maxinboundconnections: 125
+    
+  # Storage optimization
+  # -- Enable blockchain pruning to reduce disk usage
+  pruning: false
+  # -- Prune target size in MiB (only used when pruning is enabled)
+  # Must be at least 550 MiB
+  prunesize: 550
+  
+  # ZMQ settings
+  zmq:
+    # -- Enable ZMQ notifications
+    enabled: false
+    # -- ZMQ notification endpoint for transaction hash notifications
+    hashTx: "tcp://0.0.0.0:28333"
+    # -- ZMQ notification endpoint for block hash notifications
+    hashBlock: "tcp://0.0.0.0:28333"
+    # -- ZMQ notification endpoint for raw transaction notifications
+    rawTx: "tcp://0.0.0.0:28333"
+    # -- ZMQ notification endpoint for raw block notifications
+    rawBlock: "tcp://0.0.0.0:28333"
+  
+  # -- Additional custom parameters for bitcoin.conf
+  # @example
+  # extraConfig:
+  #   blockfilterindex: 1
+  #   peerblockfilters: 1
+  extraConfig: {}
+
+# Persistent storage configuration for blockchain data
+persistence:
+  # -- Enable persistent storage for blockchain data
+  enabled: true
+  # -- Use an existing PVC
+  # @default -- ""
+  existingClaim: ""
+  # -- Storage class for the blockchain PVC
+  # @description -- If defined, storageClassName: <storageClass>
+  # If set to "-", storageClassName: "", which disables dynamic provisioning
+  # If undefined (the default) or set to null, no storageClassName spec is
+  # set, choosing the default provisioner
+  # @default -- ""
+  storageClassName: ""
+  # -- Access modes for the PVC
+  accessModes:
+    - ReadWriteOnce
+  # -- Size of the PVC for blockchain data
+  size: 500Gi
+  # -- Annotations for the PVC
+  # @default -- {}
+  annotations: {}
+
+# Service configuration
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Port for P2P connections
+  p2pPort: 8333
+  # -- Port for RPC interface
+  rpcPort: 8332
+  # -- Port for ZMQ notifications
+  zmqPort: 28333
+
+# -- Resource requests and limits
+resources:
+  requests:
+    cpu: 1
+    memory: 2Gi
+  limits:
+    cpu: 4
+    memory: 8Gi
+
+# -- Node selector for pod assignment
+# @default -- {}
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+# @default -- []
+tolerations: []
+
+# -- Affinity for pod assignment
+# @default -- {}
+affinity: {}
+
+# Pod probe configuration
+probes:
+  # Configure startup probe
+  startup:
+    # -- Enable startup probe
+    enabled: true
+    # -- Probe type: httpGet, tcpSocket, or exec
+    type: "tcpSocket"
+    # -- Path for HTTP GET requests (only used when type is httpGet)
+    path: "/v2/info"
+    # -- Command for exec probe (only used when type is exec)
+    command: 
+      - "/bin/sh"
+      - "-c"
+      - "bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"
+    # -- Initial delay seconds
+    initialDelaySeconds: 30
+    # -- Period seconds
+    periodSeconds: 10
+    # -- Timeout seconds
+    timeoutSeconds: 5
+    # -- Failure threshold
+    failureThreshold: 30
+  
+  # Configure liveness probe
+  liveness:
+    # -- Enable liveness probe
+    enabled: true
+    # -- Probe type: httpGet, tcpSocket, or exec
+    type: "tcpSocket"
+    # -- Path for HTTP GET requests (only used when type is httpGet)
+    path: "/v2/info"
+    # -- Command for exec probe (only used when type is exec)
+    command: 
+      - "/bin/sh"
+      - "-c"
+      - "bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"
+    # -- Initial delay seconds
+    initialDelaySeconds: 60
+    # -- Period seconds
+    periodSeconds: 30
+    # -- Timeout seconds
+    timeoutSeconds: 5
+    # -- Failure threshold
+    failureThreshold: 3
+  
+  # Configure readiness probe
+  readiness:
+    # -- Enable readiness probe
+    enabled: true
+    # -- Probe type: httpGet, tcpSocket, or exec
+    type: "tcpSocket"
+    # -- Path for HTTP GET requests (only used when type is httpGet)
+    path: "/v2/info"
+    # -- Command for exec probe (only used when type is exec)
+    command: 
+      - "/bin/sh"
+      - "-c"
+      - "bitcoin-cli -rpcuser=$BTC_RPCUSER -rpcpassword=$BTC_RPCPASSWORD getblockchaininfo"
+    # -- Initial delay seconds
+    initialDelaySeconds: 30
+    # -- Period seconds
+    periodSeconds: 10
+    # -- Timeout seconds
+    timeoutSeconds: 5
+    # -- Success threshold
+    successThreshold: 1
+    # -- Failure threshold
+    failureThreshold: 3
+
+# Prometheus metrics configuration
+metrics:
+  # -- Enable Prometheus metrics exporter sidecar
+  enabled: false
+  # -- Container image for metrics
+  image: "prometheuscommunity/bitcoin-exporter:latest"
+  # -- Metrics image pull policy
+  pullPolicy: IfNotPresent
+  # -- Metrics container port
+  port: 9332
+  # -- Metrics service port
+  servicePort: 9332
+  # -- Resources for metrics container
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  # -- Metrics service annotations
+  serviceAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9332"
+
+# Network policy configuration
+networkPolicy:
+  # -- Enable network policy for Bitcoin Core
+  enabled: false
+  # -- Define which pods can access the Bitcoin RPC interface
+  # @default -- []
+  rpcAllowFrom: []
+  # -- Define which pods can access the Bitcoin P2P interface
+  # Leave empty to allow all pods to connect to P2P network
+  # @default -- []
+  p2pAllowFrom: []
+  # -- Define which pods can access the ZMQ interface
+  # @default -- []
+  zmqAllowFrom: []
+
+# Pod Disruption Budget for high availability
+podDisruptionBudget:
+  # -- Enable PDB
+  enabled: false
+  # -- Minimum available pods
+  minAvailable: 1
+  # -- Maximum unavailable pods
+  maxUnavailable: null
+
+# -- Topology spread constraints for pod distribution
+topologySpreadConstraints: []
+  # - maxSkew: 1
+  #   topologyKey: topology.kubernetes.io/zone
+  #   whenUnsatisfiable: DoNotSchedule
+  #   labelSelector:
+  #     matchLabels:
+  #       app.kubernetes.io/name: bitcoind

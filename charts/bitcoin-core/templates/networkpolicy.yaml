@@ -1,0 +1,43 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "bitcoind.fullname" . }}
+  labels:
+    {{- include "bitcoind.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "bitcoind.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    # P2P port
+    - ports:
+        - port: {{ .Values.service.p2pPort }}
+          protocol: TCP
+      {{- if .Values.networkPolicy.p2pAllowFrom }}
+      from:
+        {{- toYaml .Values.networkPolicy.p2pAllowFrom | nindent 8 }}
+      {{- end }}
+    
+    # RPC port
+    - ports:
+        - port: {{ .Values.bitcoind.rpc.port }}
+          protocol: TCP
+      {{- if .Values.networkPolicy.rpcAllowFrom }}
+      from:
+        {{- toYaml .Values.networkPolicy.rpcAllowFrom | nindent 8 }}
+      {{- end }}
+    
+    # ZMQ port
+    {{- if .Values.bitcoind.zmq.enabled }}
+    - ports:
+        - port: {{ .Values.service.zmqPort }}
+          protocol: TCP
+      {{- if .Values.networkPolicy.zmqAllowFrom }}
+      from:
+        {{- toYaml .Values.networkPolicy.zmqAllowFrom | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}
