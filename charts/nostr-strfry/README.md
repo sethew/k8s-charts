@@ -1,6 +1,6 @@
 # nostr-strfry
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.4](https://img.shields.io/badge/AppVersion-1.0.4-informational?style=flat-square)
+![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.4](https://img.shields.io/badge/AppVersion-1.0.4-informational?style=flat-square)
 
 A Helm chart for deploying a Nostr strfry relay
 
@@ -91,6 +91,11 @@ The following table lists the configurable parameters for the nostr-strfry chart
 | ingress.hosts | list | [{ host: nostr.k3s.home }] | List of ingress hosts |
 | ingress.tls | list | `[]` | Ingress TLS configuration |
 | nameOverride | string | `""` | String to partially override nostr-relay.fullname template |
+| nip05.enabled | bool | `false` | Enable NIP-05 verification service |
+| nip05.identities | string | `nil` | NIP-05 identities mapping usernames to public keys |
+| nip05.image.pullPolicy | string | `"IfNotPresent"` | NIP-05 server Docker image pull policy |
+| nip05.image.repository | string | `"nginx"` | NIP-05 server Docker image repository |
+| nip05.image.tag | string | `"alpine"` | Overrides the image tag |
 | persistence.accessMode | string | `"ReadWriteOnce"` | Access mode for the persistent volume |
 | persistence.enabled | bool | `true` | Enable persistent storage for the database |
 | persistence.size | string | `"10Gi"` | Size of the persistent volume |
@@ -150,6 +155,32 @@ config:
   relay:
     info:
       nips: "[1, 2, 4, 9, 11, 22, 28, 40, 70, 77]"
+```
+
+## NIP-05 Support
+
+This chart includes built-in support for NIP-05 (.well-known/nostr.json) verification. To enable it:
+
+```yaml
+nip05:
+  enabled: true
+  identities:
+    username1: "hex_public_key1"
+    username2: "hex_public_key2"
+```
+
+When enabled, the chart deploys a small nginx container to serve the necessary static files, and updates the ingress to route `.well-known` paths to this service. Users can then verify themselves using NIP-05 identifiers like `username1@yourdomain.com`.
+
+### Configuring NIP-05 Identities
+
+Add usernames and their corresponding public keys to the `nip05.identities` map in your values file:
+
+```yaml
+nip05:
+  enabled: true
+  identities:
+    alice: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    bob: "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
 ```
 
 ## Using with Kubernetes

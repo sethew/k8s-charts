@@ -149,3 +149,18 @@ data:
         maxSyncEvents = {{ .Values.config.relay.negentropy.maxSyncEvents }}
       }
     }
+{{ if .Values.nip05.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nostr-strfry.fullname" . }}-nip05
+  labels:
+    {{- include "nostr-strfry.labels" . | nindent 4 }}
+data:
+  nostr.json: |
+    {
+      "names": 
+      {{- toJson .Values.nip05.identities | nindent 6 }}
+    }
+{{ end }}

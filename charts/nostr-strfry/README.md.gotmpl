@@ -82,6 +82,32 @@ config:
       nips: "[1, 2, 4, 9, 11, 22, 28, 40, 70, 77]"
 ```
 
+## NIP-05 Support
+
+This chart includes built-in support for NIP-05 (.well-known/nostr.json) verification. To enable it:
+
+```yaml
+nip05:
+  enabled: true
+  identities:
+    username1: "hex_public_key1"
+    username2: "hex_public_key2"
+```
+
+When enabled, the chart deploys a small nginx container to serve the necessary static files, and updates the ingress to route `.well-known` paths to this service. Users can then verify themselves using NIP-05 identifiers like `username1@yourdomain.com`.
+
+### Configuring NIP-05 Identities
+
+Add usernames and their corresponding public keys to the `nip05.identities` map in your values file:
+
+```yaml
+nip05:
+  enabled: true
+  identities:
+    alice: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    bob: "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
+```
+
 ## Using with Kubernetes
 
 Once your relay is deployed, you can access it using the service endpoint. The default configuration creates a ClusterIP service, which means it's only accessible within the cluster.

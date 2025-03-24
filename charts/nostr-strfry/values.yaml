@@ -66,7 +66,7 @@ ingress:
     - host: nostr.k3s.home
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          pathType: Prefix
   # -- Ingress TLS configuration
   tls: []
   # - hosts:
@@ -92,6 +92,22 @@ persistence:
   storageClass: ""
   # -- Access mode for the persistent volume
   accessMode: ReadWriteOnce
+
+# NIP-05 configuration
+nip05:
+  # -- Enable NIP-05 verification service
+  enabled: false
+  image:
+    # -- NIP-05 server Docker image repository
+    repository: nginx
+    # -- NIP-05 server Docker image pull policy
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    tag: "alpine"
+  # -- NIP-05 identities mapping usernames to public keys
+  identities:
+    # username: "hex_public_key"
+    # alice: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
 # Global configuration
 config:

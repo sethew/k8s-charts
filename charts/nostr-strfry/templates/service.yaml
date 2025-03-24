@@ -13,3 +13,23 @@ spec:
       name: http
   selector:
     {{- include "nostr-strfry.selectorLabels" . | nindent 4 }}
+{{ if .Values.nip05.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nostr-strfry.fullname" . }}-nip05
+  labels:
+    {{- include "nostr-strfry.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nip05
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "nostr-strfry.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nip05
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+{{ end }}
