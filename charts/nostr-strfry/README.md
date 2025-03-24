@@ -1,6 +1,6 @@
 # nostr-strfry
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.4](https://img.shields.io/badge/AppVersion-1.0.4-informational?style=flat-square)
+![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.4](https://img.shields.io/badge/AppVersion-1.0.4-informational?style=flat-square)
 
 A Helm chart for deploying a Nostr strfry relay
 
@@ -96,6 +96,7 @@ The following table lists the configurable parameters for the nostr-strfry chart
 | nip05.image.pullPolicy | string | `"IfNotPresent"` | NIP-05 server Docker image pull policy |
 | nip05.image.repository | string | `"nginx"` | NIP-05 server Docker image repository |
 | nip05.image.tag | string | `"alpine"` | Overrides the image tag |
+| nip05.relays | string | `nil` | NIP-05 identities mapping user public keys to relays |
 | persistence.accessMode | string | `"ReadWriteOnce"` | Access mode for the persistent volume |
 | persistence.enabled | bool | `true` | Enable persistent storage for the database |
 | persistence.size | string | `"10Gi"` | Size of the persistent volume |

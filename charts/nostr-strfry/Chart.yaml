@@ -2,7 +2,7 @@ apiVersion: v2
 name: nostr-strfry
 description: A Helm chart for deploying a Nostr strfry relay
 type: application
-version: 1.1.0
+version: 1.1.1
 appVersion: "1.0.4"
 home: https://nostr.com/
 icon: https://user-images.githubusercontent.com/99301796/219900773-d6d02038-e2a0-4334-9f28-c14d40ab6fe7.png
