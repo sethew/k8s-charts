@@ -108,6 +108,11 @@ nip05:
   identities:
     # username: "hex_public_key"
     # alice: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  # -- NIP-05 identities mapping user public keys to relays
+  relays:
+    # "hex_public_key": ["relay1", "relay2", ...]
+    # "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef": ["wss://relay1.nostr.com", "wss://relay2.nostr.com"]
+
 
 # Global configuration
 config:
