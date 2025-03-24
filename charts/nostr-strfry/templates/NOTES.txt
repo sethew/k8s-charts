@@ -1,6 +1,6 @@
 Thank you for installing {{ .Chart.Name }} (version: {{ .Chart.Version }}).
 
-Your Nostr Rs Relay has been deployed and should be available shortly.
+Your Nostr strfry Relay has been deployed and should be available shortly.
 
 1. Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
@@ -9,6 +9,12 @@ Your Nostr Rs Relay has been deployed and should be available shortly.
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
   {{- end }}
 {{- end }}
+
+{{- if .Values.nip05.enabled }}
+  NIP-05 verification is available at:
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ (index .Values.ingress.hosts 0).host }}/.well-known/nostr.json
+{{- end }}
+
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "nostr-strfry.fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -30,5 +36,5 @@ Your Nostr Rs Relay has been deployed and should be available shortly.
 2. View the logs of your relay:
   kubectl logs -f deployment/{{ include "nostr-strfry.fullname" . }} -n {{ .Release.Namespace }}
 
-For more information on configuring the relay, check the config.toml documentation:
-https://github.com/scsibug/nostr-rs-relay
+For more information on configuring the relay, check the documentation:
+https://github.com/hoytech/strfry
