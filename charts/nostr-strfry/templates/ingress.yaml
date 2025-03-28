@@ -30,15 +30,6 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- if $.Values.nip05.enabled }}
-          - path: /.well-known
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ $fullName }}-nip05
-                port:
-                  number: 80
-          {{- end }}
           {{- range .paths }}
           - path: {{ .path }}
             pathType: {{ .pathType }}
