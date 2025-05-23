@@ -19,10 +19,6 @@ This repository contains Helm charts designed for easy deployment of popular sel
 | Chart         | Description                                                      |
 | ------------- | ---------------------------------------------------------------- |
 | actual-budget | A self-hosted budgeting application                              |
-| jellyfin      | Media system that puts you in control of your media              |
-| palworld      | Dedicated server for Palworld                                    |
-| enshrouded    | Dedicated server for Enshrouded                                  |
-| qbittorrent   | BitTorrent client with built-in VPN support                      |
 
 ## Getting Started
 
@@ -36,7 +32,7 @@ This repository contains Helm charts designed for easy deployment of popular sel
 To add the Helm repository, run:
 
 ```
-helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
+helm repo add k8s-charts https://sethew.github.io/k8s-charts/
 helm repo update
 ```
 
@@ -59,10 +55,6 @@ helm install my-jellyfin k8s-charts/jellyfin -f my-values.yaml
 Each chart includes detailed documentation on available configuration options:
 
 - [**Actual Budget**](charts/actual-budget/README.md)
-- [**Jellyfin**](charts/jellyfin/README.md)
-- [**Palworld**](charts/palworld-server/README.md)
-- [**Enshourded**](charts/enshrouded-server/README.md)
-- [**qBittorrent**](charts/qbittorrent/README.md)
 
 ## Configuration
 

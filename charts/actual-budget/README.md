@@ -12,7 +12,7 @@ This is a Helm chart for deploying Actual Budget, a self-hosted budgeting applic
 1. Add the repository containing this Helm chart:
 
 ```bash
-helm repo add k8s-charts https://kriegalex.github.io/k8s-charts/
+helm repo add k8s-charts https://sethew.github.io/k8s-charts/
 ```
 
 2. Install the chart using Helm:

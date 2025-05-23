@@ -11,17 +11,14 @@ keywords:
   - budget
   - self-hosted
   - finance
-maintainers:
-  - name: kriegalex
-    email: kriegalex@gmail.com
 sources:
   - https://github.com/actualbudget/actual
-  - https://github.com/kriegalex/k8s-charts/tree/main/charts/actual-budget
+  - https://github.com/sethew/k8s-charts/tree/main/charts/actual-budget
 deprecated: false
 annotations:
   artifacthub.io/links: |
     - name: Chart source
-      url: https://github.com/kriegalex/k8s-charts/tree/main/charts/actual-budget
+      url: https://github.com/sethew/k8s-charts/tree/main/charts/actual-budget
     - name: Docker image source
       url: https://github.com/actualbudget/actual
   artifacthub.io/images: |

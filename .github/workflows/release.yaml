@@ -21,7 +21,7 @@ jobs:
       contents: read
       pull-requests: read
     runs-on: ubuntu-latest
-    if: github.repository == 'kriegalex/k8s-charts'
+    if: github.repository == 'sethew/k8s-charts'
     outputs:
       charts: ${{ steps.filter.outputs.charts }}
 
@@ -95,7 +95,7 @@ jobs:
       contents: write
     if: |
       github.ref == 'refs/heads/main' &&
-      github.repository == 'kriegalex/k8s-charts' &&
+      github.repository == 'sethew/k8s-charts' &&
       needs.changes.outputs.charts == 'true'
 
     steps:
