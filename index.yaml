@@ -1,0 +1,35 @@
+apiVersion: v1
+entries:
+  actual-budget:
+  - annotations:
+      artifacthub.io/images: |
+        - name: actual-server
+          image: actualbudget/actual-server:25.3.1
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/sethew/k8s-charts/tree/main/charts/actual-budget
+        - name: Docker image source
+          url: https://github.com/actualbudget/actual
+    apiVersion: v2
+    appVersion: 25.3.1
+    created: "2025-05-23T21:58:09.436572674Z"
+    description: This is a Helm chart for deploying Actual Budget, a self-hosted budgeting
+      application. This chart provides a convenient and customizable way to deploy
+      Actual Budget on a Kubernetes cluster.
+    digest: 575cb4bf62d913a239e9559e34b55b51dca62b55dbc546dbcb99a751e4be5cca
+    home: https://actualbudget.org
+    icon: https://raw.githubusercontent.com/actualbudget/actual/refs/heads/master/packages/desktop-client/public/maskable-192x192.png
+    keywords:
+    - budget
+    - self-hosted
+    - finance
+    kubeVersion: '>=1.19.0-0'
+    name: actual-budget
+    sources:
+    - https://github.com/actualbudget/actual
+    - https://github.com/sethew/k8s-charts/tree/main/charts/actual-budget
+    type: application
+    urls:
+    - https://github.com/sethew/k8s-charts/releases/download/actual-budget-0.2.3/actual-budget-0.2.3.tgz
+    version: 0.2.3
+generated: "2025-05-23T21:58:09.436583715Z"
