@@ -10,9 +10,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.ingress.ingressClassName }}
-  ingressClassName: {{ .Values.ingress.ingressClassName }}
-{{- end }}
+  {{- if .Values.ingress.ingressClassName }}
+    ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - secretName: {{ .Values.ingress.tls.secretName }} 
+      hosts:
+      - {{ trimPrefix "https://" .Values.ingress.url }}
+  {{- end }}
   rules:
   - host: {{ trimPrefix "https://" .Values.ingress.url }}
     http:
@@ -24,8 +30,5 @@ spec:
             name: {{ include "actual-budget.fullname" . }}
             port:
               number: {{ .Values.service.port }}
-  tls:
-  - hosts:
-    - {{ trimPrefix "https://" .Values.ingress.url }}
-    secretName: {{ include "actual-budget.fullname" . }}-ingress-lets-encrypt
-{{- end -}}
+  {{- end -}}
+
