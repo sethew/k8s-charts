@@ -1,6 +1,6 @@
 # Actual Budget Helm Chart
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 25.3.1](https://img.shields.io/badge/AppVersion-25.3.1-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 25.3.1](https://img.shields.io/badge/AppVersion-25.3.1-informational?style=flat-square)
 
 This is a Helm chart for deploying Actual Budget, a self-hosted budgeting application. This chart provides a convenient and customizable way to deploy Actual Budget on a Kubernetes cluster.
 
@@ -74,6 +74,9 @@ image:
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. @example annotations:   cert-manager.io/cluster-issuer: letsencrypt-prod |
 | ingress.enabled | bool | `false` | Enable or disable Ingress resource. |
 | ingress.ingressClassName | string | `""` | Specify the ingressClassName (optional). |
+| ingress.tls | object | `{"enabled":false,"secretName":""}` | TLS configuration for the Ingress. |
+| ingress.tls.enabled | bool | `false` | Enable or disable TLS. |
+| ingress.tls.secretName | string | `""` | Secret name for the TLS certificate |
 | ingress.url | string | `"actual.domain.com"` | Hostname for the Ingress. |
 | persistence.enabled | bool | `true` | Enable or disable persistent storage. |
 | persistence.existingClaim | string | `""` | Specify an existing PVC claim name, if available. |
