@@ -33,6 +33,12 @@ ingress:
   # annotations:
   #   cert-manager.io/cluster-issuer: letsencrypt-prod
   annotations: {}
+  # -- TLS configuration for the Ingress.
+  tls:
+    # -- Enable or disable TLS.
+    enabled: false
+    # -- Secret name for the TLS certificate
+    secretName: ""
 
 # Persistent storage settings for data.
 persistence:

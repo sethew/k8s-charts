@@ -4,7 +4,7 @@ description: This is a Helm chart for deploying Actual Budget, a self-hosted bud
 home: https://actualbudget.org
 icon: https://raw.githubusercontent.com/actualbudget/actual/refs/heads/master/packages/desktop-client/public/maskable-192x192.png
 type: application
-version: 0.2.3
+version: 0.3.0
 kubeVersion: ">=1.19.0-0"
 appVersion: "25.3.1"
 keywords:
@@ -15,6 +15,8 @@ sources:
   - https://github.com/actualbudget/actual
   - https://github.com/sethew/k8s-charts/tree/main/charts/actual-budget
 deprecated: false
+maintainers:
+  - name: sethew
 annotations:
   artifacthub.io/links: |
     - name: Chart source
